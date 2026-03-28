@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Url Video Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #d32f2f;
+            --white: #ffffff;
+            --gray: #f0f0f0;
+            --text-dark: #333333;
+            --text-gray: #777777;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--primary-red);
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            color: var(--text-dark);
+            overflow: hidden; 
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            background-color: var(--primary-red);
+            position: relative;
+        }
+
+        header {
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h2 { margin: 0; font-size: 20px; font-weight: 600; }
+        header .fa-ellipsis-vertical { font-size: 20px; }
+
+        .status-bar {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            margin: 0 20px 15px 20px;
+            color: white;
+        }
+        .status-dot {
+            height: 8px; width: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-bar .hd-quality {
+            margin-left: auto;
+            opacity: 0.7;
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            height: 250px;
+            margin: 0 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #placeholderText {
+            color: var(--white);
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+            position: absolute;
+            width: 80%;
+            z-index: 1;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Changed to contain to show full video */
+            position: absolute;
+            top: 0; left: 0;
+            display: none; 
+        }
+
+        .player-controls {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none; 
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            box-sizing: border-box;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+
+        .controls-top {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px;
+            gap: 15px;
+        }
+        .controls-top i { color: white; font-size: 24px; opacity: 0.8; cursor: pointer; }
+
+        .controls-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .circle-control {
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .circle-control:hover { background-color: rgba(255,255,255,0.1); }
+        .center-play-pause {
+            width: 65px; height: 65px;
+            background: rgba(0,0,0,0.5);
+            border: 3px solid white;
+        }
+        .circle-control i { color: white; font-size: 24px; }
+        .rewind i, .forward i { font-size: 18px; }
+        .forward, .rewind { background: rgba(0,0,0,0.3); }
+
+        .controls-bottom-bar {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; padding: 10px;
+            box-sizing: border-box;
+            background: rgba(0,0,0,0.5);
+            display: flex; align-items: center;
+            color: white; font-size: 12px; gap: 10px;
+        }
+        .time-display { display: flex; gap: 5px; }
+        .bottom-icons {
+            margin-left: auto;
+            display: flex; gap: 12px; align-items: center;
+        }
+        .bottom-icons i { color: white; font-size: 20px; opacity: 0.8; cursor: pointer; }
+        
+        .seek-bar-container {
+            flex-grow: 1; height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px; position: relative; cursor: pointer;
+            padding: 10px 0; /* Expanded touch area */
+            background-clip: content-box;
+        }
+        .seek-bar-progress {
+            height: 100%; background: var(--primary-red);
+            border-radius: 2px; width: 0%;
+            position: absolute; top: 10px;
+        }
+        .seek-handle {
+            width: 12px; height: 12px;
+            background: var(--primary-red);
+            border-radius: 50%; position: absolute;
+            top: 12px; transform: translate(-50%, -50%);
+            left: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .content-card {
+            background: white; flex: 1; margin-top: 20px;
+            border-radius: 30px 30px 0 0; padding: 20px;
+            overflow-y: auto; display: flex; flex-direction: column; z-index: 5;
+        }
+
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .tab {
+            padding: 10px 20px; border-radius: 20px; cursor: pointer;
+            font-weight: 600; color: var(--text-gray); font-size: 15px; text-transform: uppercase;
+        }
+        .tab.active { background: #ffebee; color: var(--primary-red); }
+
+        #player-section, #history-section { display: none; }
+        #player-section.active, #history-section.active { display: block; }
+
+        .input-group {
+            border: 2px solid #ddd; border-radius: 20px;
+            padding: 12px 15px; margin-bottom: 15px; display: flex; align-items: center;
+        }
+        .input-group i { margin-right: 15px; color: var(--primary-red); font-size: 22px; width: 25px; text-align: center; }
+        input { border: none; outline: none; width: 100%; font-size: 16px; color: var(--text-dark); }
+        
+        .btn-play {
+            background: var(--primary-red); color: white; width: 100%;
+            padding: 18px; border-radius: 20px; border: none; font-size: 17px;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 12px; margin-top: 10px; text-transform: uppercase;
+        }
+
+        .history-list { display: flex; flex-direction: column; gap: 10px; }
+        .history-item {
+            background: var(--gray); padding: 15px; border-radius: 20px;
+            display: flex; align-items: center; gap: 15px; cursor: pointer;
+        }
+        .item-play-icon { background: rgba(211, 47, 47, 0.1); color: var(--primary-red); padding: 12px; border-radius: 12px; font-size: 16px; }
+        .item-info { flex: 1; overflow: hidden; }
+        .item-info h4, .item-info p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-info h4 { font-size: 16px; font-weight: 600; }
+        .item-info p { margin-top: 5px; font-size: 12px; color: var(--text-gray); }
+
+        @media screen and (max-width: 480px) {
+            .main-container { height: 100vh; max-height: 100vh; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <h2>Url Video Player</h2>
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+    </header>
+
+    <div class="status-bar">
+        <span class="status-dot"></span> <span id="statusText">Ready to Play</span> 
+        <span class="hd-quality">HD Quality</span>
+    </div>
+
+    <div class="video-container" id="videoContainer">
+        <span id="placeholderText">ADD OR SELECT VIDEO TO PLAY</span>
+        <video id="videoElement" playsinline></video>
+        
+        <div class="player-controls" id="playerControls">
+            
+            <div class="controls-top">
+                <i class="fa-solid fa-chromecast" id="castBtn" title="Cast"></i>
+                <i class="fa-solid fa-code-merge" title="Merge"></i>
+            </div>
+            
+            <div class="controls-center">
+                <div class="circle-control rewind" id="rewindBtn"><i class="fa-solid fa-rotate-left"></i></div>
+                <div class="circle-control center-play-pause" id="centerPlayPause"><i class="fa-solid fa-play"></i></div>
+                <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
+            </div>
+            
+            <div class="controls-bottom-bar">
+                <div class="time-display">
+                    <span id="currentTime">00:00</span>
+                    <span id="duration">0:00:00</span>
+                </div>
+                <div class="seek-bar-container" id="seekBarContainer">
+                    <div class="seek-bar-progress" id="seekBarProgress"></div>
+                    <div class="seek-handle" id="seekHandle"></div>
+                </div>
+                <div class="bottom-icons">
+                    <i class="fa-solid fa-backward-step" id="restartBtn" title="Restart"></i>
+                    <i class="fa-solid fa-gear" id="settingsBtn" title="Speed"></i>
+                    <i class="fa-regular fa-clone" id="pipBtn" title="Picture in Picture"></i>
+                    <i class="fa-solid fa-expand" id="fullscreenBtn" title="Fullscreen"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('player')">PLAYER</div>
+            <div class="tab" onclick="switchTab('history')">HISTORY</div>
+            <div class="tab">FAVORITES</div>
+        </div>
+
+        <div id="player-section" class="active">
+            <div class="input-group">
+                <i class="fa-solid fa-t"></i>
+                <input type="text" id="videoTitle" placeholder="Video Title">
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-link"></i>
+                <input type="text" id="videoUrl" placeholder="Video URL">
+            </div>
+            <div class="input-group">
+                <i class="fa-brands fa-internet-explorer"></i>
+                <input type="text" id="userAgent" placeholder="User Agent (Optional)">
+            </div>
+            <button class="btn-play" onclick="saveAndPlay()">
+                <i class="fa-solid fa-play"></i> SAVE AND PLAY
+            </button>
+        </div>
+
+        <div id="history-section">
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDxENg9lQdYCpcQ_ujZvh_dazfE9Qdogb8",
+        authDomain: "telegram-brought.firebaseapp.com",
+        databaseURL: "https://telegram-brought-default-rtdb.firebaseio.com",
+        projectId: "telegram-brought",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const dbRef = firebase.database().ref('history');
+
+    const video = document.getElementById('videoElement');
+    const videoContainer = document.getElementById('videoContainer');
+    const playerControls = document.getElementById('playerControls');
+    const playPauseBtn = document.getElementById('centerPlayPause');
+    const playPauseIcon = playPauseBtn.querySelector('i');
+    const currentTimeText = document.getElementById('currentTime');
+    const durationText = document.getElementById('duration');
+    const seekBarProgress = document.getElementById('seekBarProgress');
+    const seekBarContainer = document.getElementById('seekBarContainer');
+    const seekHandle = document.getElementById('seekHandle');
+    const statusText = document.getElementById('statusText');
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('player-section').classList.remove('active');
+        document.getElementById('history-section').classList.remove('active');
+
+        if(tabName === 'player') {
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('player-section').classList.add('active');
+        } else if (tabName === 'history') {
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('history-section').classList.add('active');
+            loadHistoryFromFirebase();
+        }
+    }
+
+    function saveAndPlay() {
+        const title = document.getElementById('videoTitle').value;
+        const url = document.getElementById('videoUrl').value;
+        if(!title || !url) return alert("দয়া করে টাইটেল এবং ইউআরএল দিন!");
+        
+        dbRef.push({ title: title, url: url, timestamp: new Date().toLocaleString() });
+        startPlayer(url);
+    }
+
+    function startPlayer(url) {
+        document.getElementById('placeholderText').style.display = 'none';
+        video.style.display = 'block';
+        video.src = url;
+        video.play();
+        playPauseIcon.className = 'fa-solid fa-pause';
+        showControls();
+        statusText.innerText = "Playing";
+    }
+
+    function loadHistoryFromFirebase() {
+        const listDiv = document.getElementById('historyList');
+        dbRef.on('value', (snapshot) => {
+            listDiv.innerHTML = ""; 
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                listDiv.innerHTML += `
+                    <div class="history-item" onclick="startPlayer('${data.url}')">
+                        <div class="item-play-icon"><i class="fa-solid fa-play"></i></div>
+                        <div class="item-info">
+                            <h4>${data.title}</h4>
+                            <p>${data.url}</p>
+                            <p><small>${data.timestamp}</small></p>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    // --- Video Control Logic ---
+
+    function togglePlay(e) {
+        if(e) e.stopPropagation();
+        if (video.paused) {
+            video.play();
+            playPauseIcon.className = 'fa-solid fa-pause';
+            statusText.innerText = "Playing";
+        } else {
+            video.pause();
+            playPauseIcon.className = 'fa-solid fa-play';
+            statusText.innerText = "Paused";
+        }
+    }
+
+    playPauseBtn.onclick = togglePlay;
+    document.getElementById('rewindBtn').onclick = (e) => { e.stopPropagation(); video.currentTime -= 10; };
+    document.getElementById('forwardBtn').onclick = (e) => { e.stopPropagation(); video.currentTime += 10; };
+
+    // Update Time and Seekbar
+    video.addEventListener('loadedmetadata', () => {
+        durationText.textContent = formatTime(video.duration);
+    });
+
+    video.addEventListener('timeupdate', () => {
+        currentTimeText.textContent = formatTime(video.currentTime);
+        const percentage = (video.currentTime / video.duration) * 100;
+        seekBarProgress.style.width = percentage + '%';
+        seekHandle.style.left = percentage + '%';
+    });
+
+    function formatTime(seconds) {
+        if(isNaN(seconds)) return "00:00";
+        let h = Math.floor(seconds / 3600);
+        let m = Math.floor((seconds % 3600) / 60);
+        let s = Math.floor(seconds % 60);
+        m = m < 10 ? '0' + m : m;
+        s = s < 10 ? '0' + s : s;
+        return h > 0 ? h + ':' + m + ':' + s : m + ':' + s;
+    }
+
+    // Seekbar Drag (Real-time Touch & Mouse)
+    let isDragging = false;
+    function setSeekPosition(e) {
+        const rect = seekBarContainer.getBoundingClientRect();
+        let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        let posPercentage = (clientX - rect.left) / rect.width;
+        posPercentage = Math.max(0, Math.min(1, posPercentage)); // Limit 0 to 1
+        video.currentTime = posPercentage * video.duration;
+    }
+
+    seekBarContainer.addEventListener('mousedown', (e) => { e.stopPropagation(); isDragging = true; setSeekPosition(e); });
+    seekBarContainer.addEventListener('touchstart', (e) => { e.stopPropagation(); isDragging = true; setSeekPosition(e); }, {passive: false});
+
+    document.addEventListener('mousemove', (e) => { if(isDragging) setSeekPosition(e); });
+    document.addEventListener('touchmove', (e) => { if(isDragging) setSeekPosition(e); }, {passive: false});
+
+    document.addEventListener('mouseup', () => { isDragging = false; });
+    document.addEventListener('touchend', () => { isDragging = false; });
+
+    // --- Bottom Right Icons Functionality ---
+    
+    // 1. Restart
+    document.getElementById('restartBtn').onclick = (e) => {
+        e.stopPropagation();
+        video.currentTime = 0;
+        video.play();
+        playPauseIcon.className = 'fa-solid fa-pause';
+    };
+
+    // 2. Playback Speed (Settings Gear)
+    let speeds = [1, 1.5, 2];
+    let speedIndex = 0;
+    document.getElementById('settingsBtn').onclick = (e) => {
+        e.stopPropagation();
+        speedIndex = (speedIndex + 1) % speeds.length;
+        video.playbackRate = speeds[speedIndex];
+        statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
+    };
+
+    // 3. Picture in Picture (Clone)
+    document.getElementById('pipBtn').onclick = async (e) => {
+        e.stopPropagation();
+        try {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            } else {
+                await video.requestPictureInPicture();
+            }
+        } catch (error) { console.log("PiP not supported"); }
+    };
+
+    // 4. Fullscreen (Expand)
+    document.getElementById('fullscreenBtn').onclick = (e) => {
+        e.stopPropagation();
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().catch(err => console.log(err));
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
+    // --- Auto Hide Controls Logic ---
+    let controlsTimeout;
+    function showControls() {
+        playerControls.style.display = 'flex';
+        clearTimeout(controlsTimeout);
+        if (!video.paused) {
+            controlsTimeout = setTimeout(() => {
+                if(!isDragging) playerControls.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    videoContainer.addEventListener('mousemove', showControls);
+    videoContainer.addEventListener('touchstart', showControls, {passive: true});
+    
+    videoContainer.addEventListener('click', (e) => {
+        // Prevent toggling if clicking on control buttons
+        if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top')) return;
+        
+        if (playerControls.style.display === 'none' || playerControls.style.display === '') {
+            showControls();
+        } else {
+            playerControls.style.display = 'none';
+        }
+    });
+
+</script>
+
+</body>
+  </html>
