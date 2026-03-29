@@ -92,7 +92,7 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Changed to contain to show full video */
+            object-fit: contain; 
             position: absolute;
             top: 0; left: 0;
             display: none; 
@@ -166,7 +166,7 @@
             flex-grow: 1; height: 4px;
             background: rgba(255,255,255,0.3);
             border-radius: 2px; position: relative; cursor: pointer;
-            padding: 10px 0; /* Expanded touch area */
+            padding: 10px 0; 
             background-clip: content-box;
         }
         .seek-bar-progress {
@@ -180,6 +180,37 @@
             border-radius: 50%; position: absolute;
             top: 12px; transform: translate(-50%, -50%);
             left: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* Settings Menu CSS Added Here */
+        .settings-menu {
+            position: absolute;
+            bottom: 45px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            min-width: 110px;
+            z-index: 20;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .setting-item {
+            padding: 12px 15px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .content-card {
@@ -257,6 +288,12 @@
                 <div class="circle-control center-play-pause" id="centerPlayPause"><i class="fa-solid fa-play"></i></div>
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
+
+            <!-- Settings Menu Added Here -->
+            <div class="settings-menu" id="settingsMenu">
+                <div class="setting-item" id="speedOption">Speed: 1x</div>
+                <div class="setting-item" id="downloadOption">Download</div>
+            </div>
             
             <div class="controls-bottom-bar">
                 <div class="time-display">
@@ -269,7 +306,7 @@
                 </div>
                 <div class="bottom-icons">
                     <i class="fa-solid fa-backward-step" id="restartBtn" title="Restart"></i>
-                    <i class="fa-solid fa-gear" id="settingsBtn" title="Speed"></i>
+                    <i class="fa-solid fa-gear" id="settingsBtn" title="Settings"></i>
                     <i class="fa-regular fa-clone" id="pipBtn" title="Picture in Picture"></i>
                     <i class="fa-solid fa-expand" id="fullscreenBtn" title="Fullscreen"></i>
                 </div>
@@ -412,11 +449,15 @@
         durationText.textContent = formatTime(video.duration);
     });
 
+    let isDragging = false; 
+
     video.addEventListener('timeupdate', () => {
-        currentTimeText.textContent = formatTime(video.currentTime);
-        const percentage = (video.currentTime / video.duration) * 100;
-        seekBarProgress.style.width = percentage + '%';
-        seekHandle.style.left = percentage + '%';
+        if (!isDragging) { 
+            currentTimeText.textContent = formatTime(video.currentTime);
+            const percentage = (video.currentTime / video.duration) * 100;
+            seekBarProgress.style.width = percentage + '%';
+            seekHandle.style.left = percentage + '%';
+        }
     });
 
     function formatTime(seconds) {
@@ -429,24 +470,54 @@
         return h > 0 ? h + ':' + m + ':' + s : m + ':' + s;
     }
 
-    // Seekbar Drag (Real-time Touch & Mouse)
-    let isDragging = false;
-    function setSeekPosition(e) {
+    // --- SMOOTH Seekbar Drag Logic ---
+    let dragPercentage = 0;
+
+    function getPercentage(e) {
         const rect = seekBarContainer.getBoundingClientRect();
-        let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
         let posPercentage = (clientX - rect.left) / rect.width;
-        posPercentage = Math.max(0, Math.min(1, posPercentage)); // Limit 0 to 1
-        video.currentTime = posPercentage * video.duration;
+        return Math.max(0, Math.min(1, posPercentage)); 
     }
 
-    seekBarContainer.addEventListener('mousedown', (e) => { e.stopPropagation(); isDragging = true; setSeekPosition(e); });
-    seekBarContainer.addEventListener('touchstart', (e) => { e.stopPropagation(); isDragging = true; setSeekPosition(e); }, {passive: false});
+    function updateSeekBarUI(percentage) {
+        seekBarProgress.style.width = (percentage * 100) + '%';
+        seekHandle.style.left = (percentage * 100) + '%';
+        currentTimeText.textContent = formatTime(percentage * video.duration);
+    }
 
-    document.addEventListener('mousemove', (e) => { if(isDragging) setSeekPosition(e); });
-    document.addEventListener('touchmove', (e) => { if(isDragging) setSeekPosition(e); }, {passive: false});
+    function startDragging(e) {
+        e.stopPropagation(); 
+        isDragging = true; 
+        dragPercentage = getPercentage(e);
+        updateSeekBarUI(dragPercentage);
+    }
 
-    document.addEventListener('mouseup', () => { isDragging = false; });
-    document.addEventListener('touchend', () => { isDragging = false; });
+    function duringDragging(e) {
+        if(isDragging) {
+            if(e.type.includes('touch')) e.preventDefault(); 
+            dragPercentage = getPercentage(e);
+            updateSeekBarUI(dragPercentage);
+        }
+    }
+
+    function stopDragging() {
+        if(isDragging) {
+            isDragging = false;
+            if(video.duration) {
+                video.currentTime = dragPercentage * video.duration; 
+            }
+        }
+    }
+
+    seekBarContainer.addEventListener('mousedown', startDragging);
+    seekBarContainer.addEventListener('touchstart', startDragging, {passive: false});
+
+    document.addEventListener('mousemove', duringDragging);
+    document.addEventListener('touchmove', duringDragging, {passive: false});
+
+    document.addEventListener('mouseup', stopDragging);
+    document.addEventListener('touchend', stopDragging);
 
     // --- Bottom Right Icons Functionality ---
     
@@ -458,15 +529,46 @@
         playPauseIcon.className = 'fa-solid fa-pause';
     };
 
-    // 2. Playback Speed (Settings Gear)
+    // 2. Settings Menu (Speed & Download) Added Here
+    const settingsMenu = document.getElementById('settingsMenu');
+    const speedOption = document.getElementById('speedOption');
+    const downloadOption = document.getElementById('downloadOption');
+
     let speeds = [1, 1.5, 2];
     let speedIndex = 0;
+
     document.getElementById('settingsBtn').onclick = (e) => {
+        e.stopPropagation();
+        settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex';
+    };
+
+    speedOption.onclick = (e) => {
         e.stopPropagation();
         speedIndex = (speedIndex + 1) % speeds.length;
         video.playbackRate = speeds[speedIndex];
+        speedOption.innerText = `Speed: ${speeds[speedIndex]}x`;
         statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
     };
+
+    downloadOption.onclick = (e) => {
+        e.stopPropagation();
+        settingsMenu.style.display = 'none';
+        if(video.src) {
+            const a = document.createElement('a');
+            a.href = video.src;
+            a.download = document.getElementById('videoTitle').value || 'Video_Download.mp4';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            statusText.innerText = "Downloading...";
+        }
+    };
+
+    // Close settings menu when clicking anywhere else
+    document.addEventListener('click', () => {
+        settingsMenu.style.display = 'none';
+    });
 
     // 3. Picture in Picture (Clone)
     document.getElementById('pipBtn').onclick = async (e) => {
@@ -497,7 +599,10 @@
         clearTimeout(controlsTimeout);
         if (!video.paused) {
             controlsTimeout = setTimeout(() => {
-                if(!isDragging) playerControls.style.display = 'none';
+                if(!isDragging) {
+                    playerControls.style.display = 'none';
+                    settingsMenu.style.display = 'none'; // Also hide settings menu
+                }
             }, 3000);
         }
     }
@@ -506,17 +611,18 @@
     videoContainer.addEventListener('touchstart', showControls, {passive: true});
     
     videoContainer.addEventListener('click', (e) => {
-        // Prevent toggling if clicking on control buttons
-        if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top')) return;
+        // Prevent toggling if clicking on control buttons or menu
+        if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top') || e.target.closest('.settings-menu')) return;
         
         if (playerControls.style.display === 'none' || playerControls.style.display === '') {
             showControls();
         } else {
             playerControls.style.display = 'none';
+            settingsMenu.style.display = 'none';
         }
     });
 
 </script>
 
 </body>
-  </html>
+</html>
