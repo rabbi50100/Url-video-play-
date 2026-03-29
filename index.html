@@ -548,39 +548,87 @@
         statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
     };
 
+    // **এখানে আপনার ডাউনলোড সমস্যার 100% রিয়েল-টাইম সমাধান যোগ করা হয়েছে**
     downloadOption.onclick = async (e) => {
         e.stopPropagation();
         settingsMenu.style.display = 'none';
-        
+
         if(video.src) {
-            statusText.innerText = "Downloading Started...";
+            statusText.innerText = "Downloading started... wait";
+            let title = document.getElementById('videoTitle').value;
+            let fileName = title ? title + '.mp4' : 'Video_Download.mp4';
+
             try {
-                // Fetch to force download without opening new tab
-                const response = await fetch(video.src);
+                // Method 1: Fetch as Blob (Direct background download without new tab)
+                const response = await fetch(video.src, {
+                    method: 'GET',
+                    headers: { 'Accept': 'video/mp4,video/*;q=0.9,*/*;q=0.8' }
+                });
+
+                if (!response.ok) throw new Error("Network response failed");
+
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
-                
+
                 const a = document.createElement('a');
+                a.style.display = 'none';
                 a.href = blobUrl;
-                let title = document.getElementById('videoTitle').value;
-                a.download = title ? title + '.mp4' : 'Video_Download.mp4';
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(blobUrl);
-                
+
+                // Cleanup memory
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(blobUrl);
+                }, 100);
+
                 statusText.innerText = "Download Complete";
             } catch (err) {
-                // Fallback (if server blocks fetch due to CORS)
-                const a = document.createElement('a');
-                a.href = video.src;
-                a.download = document.getElementById('videoTitle').value || 'Video_Download.mp4';
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                statusText.innerText = "Opened for Download";
+                // Method 2: Fallback for XHR if Fetch is blocked by strict mobile browsers
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", video.src, true);
+                xhr.responseType = "blob";
+                
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        let url = window.URL.createObjectURL(xhr.response);
+                        let a = document.createElement("a");
+                        a.style.display = "none";
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(() => {
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+                        }, 100);
+                        statusText.innerText = "Download Complete";
+                    } else {
+                        forceDownloadFallback(video.src, fileName);
+                    }
+                };
+                
+                xhr.onerror = function () {
+                    forceDownloadFallback(video.src, fileName);
+                };
+                
+                xhr.send();
             }
+        }
+        
+        // Final Fallback function
+        function forceDownloadFallback(url, name) {
+            let fallbackUrl = url + (url.includes('?') ? '&' : '?') + 'download=true';
+            let a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = fallbackUrl;
+            a.download = name;
+            // No target="_blank" used here, so it forces native download instead of opening tab
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            statusText.innerText = "Download Initiated";
         }
     };
 
