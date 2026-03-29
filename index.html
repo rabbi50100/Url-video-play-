@@ -182,7 +182,6 @@
             left: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        /* Settings Menu CSS Added Here */
         .settings-menu {
             position: absolute;
             bottom: 45px;
@@ -289,7 +288,6 @@
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
 
-            <!-- Settings Menu Added Here -->
             <div class="settings-menu" id="settingsMenu">
                 <div class="setting-item" id="speedOption">Speed: 1x</div>
                 <div class="setting-item" id="downloadOption">Download</div>
@@ -529,7 +527,7 @@
         playPauseIcon.className = 'fa-solid fa-pause';
     };
 
-    // 2. Settings Menu (Speed & Download) Added Here
+    // 2. Settings Menu (Speed & Force Download)
     const settingsMenu = document.getElementById('settingsMenu');
     const speedOption = document.getElementById('speedOption');
     const downloadOption = document.getElementById('downloadOption');
@@ -550,18 +548,39 @@
         statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
     };
 
-    downloadOption.onclick = (e) => {
+    downloadOption.onclick = async (e) => {
         e.stopPropagation();
         settingsMenu.style.display = 'none';
+        
         if(video.src) {
-            const a = document.createElement('a');
-            a.href = video.src;
-            a.download = document.getElementById('videoTitle').value || 'Video_Download.mp4';
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            statusText.innerText = "Downloading...";
+            statusText.innerText = "Downloading Started...";
+            try {
+                // Fetch to force download without opening new tab
+                const response = await fetch(video.src);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                let title = document.getElementById('videoTitle').value;
+                a.download = title ? title + '.mp4' : 'Video_Download.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+                
+                statusText.innerText = "Download Complete";
+            } catch (err) {
+                // Fallback (if server blocks fetch due to CORS)
+                const a = document.createElement('a');
+                a.href = video.src;
+                a.download = document.getElementById('videoTitle').value || 'Video_Download.mp4';
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                statusText.innerText = "Opened for Download";
+            }
         }
     };
 
