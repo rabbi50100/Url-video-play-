@@ -110,6 +110,8 @@
             background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
             z-index: 10;
             transition: opacity 0.3s;
+            /* নতুন যোগ করা হয়েছে: ফাঁকা জায়গায় চাপ দিলে যেন তা ভিডিওর গায়ে লাগে */
+            pointer-events: none; 
         }
 
         .controls-top {
@@ -117,6 +119,7 @@
             justify-content: flex-end;
             padding: 10px;
             gap: 15px;
+            pointer-events: auto; /* নতুন যোগ করা হয়েছে: বাটনগুলো যেন কাজ করে */
         }
         .controls-top i { color: white; font-size: 24px; opacity: 0.8; cursor: pointer; }
 
@@ -127,6 +130,7 @@
             display: flex;
             align-items: center;
             gap: 20px;
+            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
         }
         .circle-control {
             border: 2px solid white;
@@ -154,6 +158,7 @@
             background: rgba(0,0,0,0.5);
             display: flex; align-items: center;
             color: white; font-size: 12px; gap: 10px;
+            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
         }
         .time-display { display: flex; gap: 5px; }
         .bottom-icons {
@@ -194,6 +199,7 @@
             z-index: 20;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
         }
         .setting-item {
             padding: 12px 15px;
@@ -527,7 +533,7 @@
         playPauseIcon.className = 'fa-solid fa-pause';
     };
 
-    // 2. Settings Menu (Speed & Download)
+    // 2. Settings Menu (Speed & Download Instruction)
     const settingsMenu = document.getElementById('settingsMenu');
     const speedOption = document.getElementById('speedOption');
     const downloadOption = document.getElementById('downloadOption');
@@ -548,29 +554,13 @@
         statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
     };
 
-    // **আপডেট করা ডাউনলোড লজিক**
+    // --- ডাউনলোড অ্যালার্ট যোগ করা হয়েছে ---
     downloadOption.onclick = (e) => {
         e.stopPropagation();
         settingsMenu.style.display = 'none';
 
         if(video.src) {
-            statusText.innerText = "Downloading Action Triggered...";
-            let title = document.getElementById('videoTitle').value;
-            let fileName = title ? title + '.mp4' : 'Video_Download.mp4';
-
-            // শুধুমাত্র HTML5 স্ট্যান্ডার্ড মেথড ব্যবহার করা হলো (target="_blank" ছাড়া)
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = video.src;
-            a.setAttribute('download', fileName);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            // স্ট্যাটাস বার আপডেট
-            setTimeout(() => {
-                statusText.innerText = "Playing";
-            }, 3000);
+            alert("ভিডিওটি ডাউনলোড করতে চাইলে, এই স্ক্রিনে যেখানে ভিডিও চলছে সেখানে আঙুল দিয়ে কিছুক্ষণ চেপে ধরে রাখুন (Long Press)। এরপর ব্রাউজার থেকে 'Download video' অপশনটি আসলে সেখানে ক্লিক করুন।");
         }
     };
 
