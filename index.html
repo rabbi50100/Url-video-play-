@@ -12,6 +12,7 @@
             --gray: #f0f0f0;
             --text-dark: #333333;
             --text-gray: #777777;
+            --bottom-nav-bg: #111111;
         }
 
         body {
@@ -89,6 +90,21 @@
             z-index: 1;
         }
 
+        .video-loader {
+            position: absolute;
+            z-index: 15;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-red);
+            animation: spin 1s ease-in-out infinite;
+            display: none; 
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         video {
             width: 100%;
             height: 100%;
@@ -110,129 +126,62 @@
             background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
             z-index: 10;
             transition: opacity 0.3s;
-            /* নতুন যোগ করা হয়েছে: ফাঁকা জায়গায় চাপ দিলে যেন তা ভিডিওর গায়ে লাগে */
             pointer-events: none; 
         }
 
-        .controls-top {
-            display: flex;
-            justify-content: flex-end;
-            padding: 10px;
-            gap: 15px;
-            pointer-events: auto; /* নতুন যোগ করা হয়েছে: বাটনগুলো যেন কাজ করে */
-        }
+        .controls-top { display: flex; justify-content: flex-end; padding: 10px; gap: 15px; pointer-events: auto; }
         .controls-top i { color: white; font-size: 24px; opacity: 0.8; cursor: pointer; }
 
         .controls-center {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
+            display: flex; align-items: center; gap: 20px; pointer-events: auto;
         }
         .circle-control {
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 50px; height: 50px;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
+            border: 2px solid white; border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s;
         }
         .circle-control:hover { background-color: rgba(255,255,255,0.1); }
-        .center-play-pause {
-            width: 65px; height: 65px;
-            background: rgba(0,0,0,0.5);
-            border: 3px solid white;
-        }
+        .center-play-pause { width: 65px; height: 65px; background: rgba(0,0,0,0.5); border: 3px solid white; }
         .circle-control i { color: white; font-size: 24px; }
         .rewind i, .forward i { font-size: 18px; }
         .forward, .rewind { background: rgba(0,0,0,0.3); }
 
         .controls-bottom-bar {
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100%; padding: 10px;
-            box-sizing: border-box;
-            background: rgba(0,0,0,0.5);
-            display: flex; align-items: center;
-            color: white; font-size: 12px; gap: 10px;
-            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; box-sizing: border-box;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; color: white; font-size: 12px; gap: 10px; pointer-events: auto;
         }
         .time-display { display: flex; gap: 5px; }
-        .bottom-icons {
-            margin-left: auto;
-            display: flex; gap: 12px; align-items: center;
-        }
+        .bottom-icons { margin-left: auto; display: flex; gap: 12px; align-items: center; }
         .bottom-icons i { color: white; font-size: 20px; opacity: 0.8; cursor: pointer; }
         
         .seek-bar-container {
-            flex-grow: 1; height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px; position: relative; cursor: pointer;
-            padding: 10px 0; 
-            background-clip: content-box;
+            flex-grow: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer; padding: 10px 0; background-clip: content-box;
         }
-        .seek-bar-progress {
-            height: 100%; background: var(--primary-red);
-            border-radius: 2px; width: 0%;
-            position: absolute; top: 10px;
-        }
+        .seek-bar-progress { height: 100%; background: var(--primary-red); border-radius: 2px; width: 0%; position: absolute; top: 10px; }
         .seek-handle {
-            width: 12px; height: 12px;
-            background: var(--primary-red);
-            border-radius: 50%; position: absolute;
-            top: 12px; transform: translate(-50%, -50%);
-            left: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            width: 12px; height: 12px; background: var(--primary-red); border-radius: 50%; position: absolute;
+            top: 12px; transform: translate(-50%, -50%); left: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         .settings-menu {
-            position: absolute;
-            bottom: 45px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 10px;
-            display: none;
-            flex-direction: column;
-            min-width: 110px;
-            z-index: 20;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            pointer-events: auto; /* নতুন যোগ করা হয়েছে */
+            position: absolute; bottom: 45px; right: 15px; background: rgba(0, 0, 0, 0.85); border-radius: 10px;
+            display: none; flex-direction: column; min-width: 110px; z-index: 20; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: auto;
         }
-        .setting-item {
-            padding: 12px 15px;
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-        .setting-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .setting-item { padding: 12px 15px; color: white; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item:hover { background: rgba(255, 255, 255, 0.2); }
 
+        /* Modified content card to fit bottom nav */
         .content-card {
             background: white; flex: 1; margin-top: 20px;
             border-radius: 30px 30px 0 0; padding: 20px;
+            padding-bottom: 80px; /* Space for Bottom Nav */
             overflow-y: auto; display: flex; flex-direction: column; z-index: 5;
         }
 
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .tab {
-            padding: 10px 20px; border-radius: 20px; cursor: pointer;
-            font-weight: 600; color: var(--text-gray); font-size: 15px; text-transform: uppercase;
-        }
-        .tab.active { background: #ffebee; color: var(--primary-red); }
-
-        #player-section, #history-section { display: none; }
-        #player-section.active, #history-section.active { display: block; }
+        .nav-section { display: none; }
+        .nav-section.active { display: block; }
 
         .input-group {
             border: 2px solid #ddd; border-radius: 20px;
@@ -247,6 +196,9 @@
             font-weight: bold; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 12px; margin-top: 10px; text-transform: uppercase;
         }
+        
+        .btn-google { background: #4285F4; }
+        .btn-logout { background: #333; margin-top: 15px; }
 
         .history-list { display: flex; flex-direction: column; gap: 10px; }
         .history-item {
@@ -258,6 +210,61 @@
         .item-info h4, .item-info p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .item-info h4 { font-size: 16px; font-weight: 600; }
         .item-info p { margin-top: 5px; font-size: 12px; color: var(--text-gray); }
+
+        /* --- New Bottom Navigation Bar CSS --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bottom-nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 50;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #777;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            gap: 5px;
+            transition: 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: white;
+        }
+        
+        .nav-item.active i {
+            color: var(--primary-red);
+        }
+
+        /* Profile Section */
+        .profile-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .profile-container img {
+            width: 90px; height: 90px; border-radius: 50%;
+            border: 3px solid var(--primary-red); margin-bottom: 10px;
+        }
+        .profile-container h3 { margin: 0; font-size: 20px; color: var(--text-dark); }
+        .profile-container p { margin: 5px 0 20px 0; color: var(--text-gray); font-size: 14px; }
+
+        .placeholder-box {
+            background: var(--gray); padding: 30px; text-align: center;
+            border-radius: 20px; color: var(--text-gray); font-weight: bold; margin-top: 20px;
+        }
 
         @media screen and (max-width: 480px) {
             .main-container { height: 100vh; max-height: 100vh; border-radius: 0; }
@@ -279,26 +286,23 @@
 
     <div class="video-container" id="videoContainer">
         <span id="placeholderText">ADD OR SELECT VIDEO TO PLAY</span>
+        <div class="video-loader" id="videoLoader"></div>
         <video id="videoElement" playsinline></video>
         
         <div class="player-controls" id="playerControls">
-            
             <div class="controls-top">
                 <i class="fa-solid fa-chromecast" id="castBtn" title="Cast"></i>
                 <i class="fa-solid fa-code-merge" title="Merge"></i>
             </div>
-            
             <div class="controls-center">
                 <div class="circle-control rewind" id="rewindBtn"><i class="fa-solid fa-rotate-left"></i></div>
                 <div class="circle-control center-play-pause" id="centerPlayPause"><i class="fa-solid fa-play"></i></div>
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
-
             <div class="settings-menu" id="settingsMenu">
                 <div class="setting-item" id="speedOption">Speed: 1x</div>
                 <div class="setting-item" id="downloadOption">Download</div>
             </div>
-            
             <div class="controls-bottom-bar">
                 <div class="time-display">
                     <span id="currentTime">00:00</span>
@@ -319,20 +323,16 @@
     </div>
 
     <div class="content-card">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('player')">PLAYER</div>
-            <div class="tab" onclick="switchTab('history')">HISTORY</div>
-            <div class="tab">FAVORITES</div>
-        </div>
-
-        <div id="player-section" class="active">
+        
+        <!-- 1. HOME SECTION -->
+        <div id="home-section" class="nav-section active">
             <div class="input-group">
                 <i class="fa-solid fa-t"></i>
                 <input type="text" id="videoTitle" placeholder="Video Title">
             </div>
             <div class="input-group">
                 <i class="fa-solid fa-link"></i>
-                <input type="text" id="videoUrl" placeholder="Video URL">
+                <input type="text" id="videoUrl" placeholder="Video URL or TG Code">
             </div>
             <div class="input-group">
                 <i class="fa-brands fa-internet-explorer"></i>
@@ -343,14 +343,82 @@
             </button>
         </div>
 
-        <div id="history-section">
+        <!-- 2. MOVIES SECTION -->
+        <div id="movies-section" class="nav-section">
+            <h3 style="margin-top:0;">All Movies</h3>
+            <div class="placeholder-box">
+                <i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
+                Movie Posts & Codes will appear here.
+            </div>
+        </div>
+
+        <!-- 3. HISTORY SECTION -->
+        <div id="history-section" class="nav-section">
+            <h3 style="margin-top:0;">Your History</h3>
             <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- 4. FAVORITES SECTION -->
+        <div id="favorites-section" class="nav-section">
+            <h3 style="margin-top:0;">Favorites</h3>
+            <div class="placeholder-box">
+                <i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>
+                No favorite videos yet.
+            </div>
+        </div>
+
+        <!-- 5. ME SECTION (LOGIN/PROFILE) -->
+        <div id="me-section" class="nav-section">
+            <!-- Show when Logged Out -->
+            <div id="loginArea" style="text-align:center; padding-top:20px;">
+                <h3 style="margin-bottom: 5px;">Welcome!</h3>
+                <p style="color:var(--text-gray); font-size:14px; margin-bottom:20px;">Please login to sync your data</p>
+                <button class="btn-play btn-google" onclick="signInWithGoogle()">
+                    <i class="fa-brands fa-google"></i> Login with Google
+                </button>
+            </div>
+            
+            <!-- Show when Logged In -->
+            <div id="profileArea" class="profile-container" style="display:none;">
+                <img id="profilePic" src="" alt="Profile Picture">
+                <h3 id="profileName">User Name</h3>
+                <p id="profileEmail">user@gmail.com</p>
+                <button class="btn-play btn-logout" onclick="signOut()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- 5 Bottom Navigation Options -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchNav('home', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('movies', this)">
+            <i class="fa-solid fa-film"></i>
+            <span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('history', this)">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('favorites', this)">
+            <i class="fa-solid fa-heart"></i>
+            <span>Favorites</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('me', this)">
+            <i class="fa-solid fa-user"></i>
+            <span>Me</span>
         </div>
     </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -360,9 +428,79 @@
         projectId: "telegram-brought",
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const dbRef = firebase.database().ref('history');
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
 
+    // --- Device ID System for Private History ---
+    function getUniqueDeviceId() {
+        let deviceId = localStorage.getItem('my_device_id');
+        if (!deviceId) {
+            // Generate a random ID for this specific mobile device
+            deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + Date.now();
+            localStorage.setItem('my_device_id', deviceId);
+        }
+        return deviceId;
+    }
+
+    // Now history is saved per device, so everyone's history is separate!
+    const userDeviceId = getUniqueDeviceId();
+    const dbRef = firebase.database().ref('user_history/' + userDeviceId); 
+    
+    // --- Google Login Logic ---
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    function signInWithGoogle() {
+        auth.signInWithPopup(provider).catch((error) => {
+            alert("লগইন ব্যর্থ হয়েছে: " + error.message);
+        });
+    }
+
+    function signOut() {
+        auth.signOut().then(() => {
+            alert("আপনি সফলভাবে লগআউট করেছেন!");
+        }).catch((error) => {
+            console.error("Logout Failed: ", error);
+        });
+    }
+
+    // Update 'Me' Section based on Login Status
+    auth.onAuthStateChanged((user) => {
+        const loginArea = document.getElementById('loginArea');
+        const profileArea = document.getElementById('profileArea');
+        
+        if (user) {
+            loginArea.style.display = 'none';
+            profileArea.style.display = 'block';
+            document.getElementById('profilePic').src = user.photoURL;
+            document.getElementById('profileName').innerText = user.displayName;
+            document.getElementById('profileEmail').innerText = user.email;
+        } else {
+            loginArea.style.display = 'block';
+            profileArea.style.display = 'none';
+        }
+    });
+
+    // --- Bottom Navigation Switch Logic ---
+    function switchNav(sectionId, clickedElement) {
+        // Hide all sections
+        document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
+        // Remove active color from all icons
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+        // Show targeted section
+        document.getElementById(sectionId + '-section').classList.add('active');
+        // Add active color to clicked icon
+        clickedElement.classList.add('active');
+
+        // Load history only if history tab is opened
+        if (sectionId === 'history') {
+            loadHistoryFromFirebase();
+        }
+    }
+
+    // --- Video Player Core Logic (Unchanged) ---
     const video = document.getElementById('videoElement');
     const videoContainer = document.getElementById('videoContainer');
     const playerControls = document.getElementById('playerControls');
@@ -374,29 +512,40 @@
     const seekBarContainer = document.getElementById('seekBarContainer');
     const seekHandle = document.getElementById('seekHandle');
     const statusText = document.getElementById('statusText');
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('player-section').classList.remove('active');
-        document.getElementById('history-section').classList.remove('active');
-
-        if(tabName === 'player') {
-            document.querySelectorAll('.tab')[0].classList.add('active');
-            document.getElementById('player-section').classList.add('active');
-        } else if (tabName === 'history') {
-            document.querySelectorAll('.tab')[1].classList.add('active');
-            document.getElementById('history-section').classList.add('active');
-            loadHistoryFromFirebase();
-        }
-    }
+    const videoLoader = document.getElementById('videoLoader');
 
     function saveAndPlay() {
-        const title = document.getElementById('videoTitle').value;
-        const url = document.getElementById('videoUrl').value;
-        if(!title || !url) return alert("দয়া করে টাইটেল এবং ইউআরএল দিন!");
-        
-        dbRef.push({ title: title, url: url, timestamp: new Date().toLocaleString() });
-        startPlayer(url);
+        let inputUrl = document.getElementById('videoUrl').value.trim(); 
+        let titleInput = document.getElementById('videoTitle').value.trim();
+
+        if(!inputUrl) return alert("দয়া করে ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!");
+
+        videoLoader.style.display = 'block';
+        document.getElementById('placeholderText').style.display = 'none';
+
+        if (inputUrl.startsWith("TG-")) {
+            statusText.innerText = "Checking Code...";
+            firebase.database().ref('secure_links/' + inputUrl).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    let finalTitle = titleInput ? titleInput : data.title; 
+                    document.getElementById('videoTitle').value = finalTitle; 
+                    dbRef.push({ title: finalTitle, url: data.real_url, timestamp: new Date().toLocaleString() });
+                    startPlayer(data.real_url);
+                } else {
+                    alert("ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।");
+                    statusText.innerText = "Ready to Play";
+                    videoLoader.style.display = 'none'; 
+                }
+            }).catch(error => {
+                alert("সার্ভার সমস্যা হচ্ছে, একটু পর আবার চেষ্টা করুন।");
+                videoLoader.style.display = 'none'; 
+            });
+        } else {
+            if(!titleInput) titleInput = "Unknown Video";
+            dbRef.push({ title: titleInput, url: inputUrl, timestamp: new Date().toLocaleString() });
+            startPlayer(inputUrl);
+        }
     }
 
     function startPlayer(url) {
@@ -406,13 +555,27 @@
         video.play();
         playPauseIcon.className = 'fa-solid fa-pause';
         showControls();
-        statusText.innerText = "Playing";
+        statusText.innerText = "Loading Video...";
     }
+
+    video.addEventListener('playing', () => {
+        videoLoader.style.display = 'none';
+        statusText.innerText = "Playing";
+    });
+
+    video.addEventListener('waiting', () => {
+        videoLoader.style.display = 'block';
+        statusText.innerText = "Buffering...";
+    });
 
     function loadHistoryFromFirebase() {
         const listDiv = document.getElementById('historyList');
         dbRef.on('value', (snapshot) => {
             listDiv.innerHTML = ""; 
+            if(!snapshot.exists()){
+                listDiv.innerHTML = "<p style='text-align:center; color:gray;'>No history found.</p>";
+                return;
+            }
             snapshot.forEach((childSnapshot) => {
                 const data = childSnapshot.val();
                 listDiv.innerHTML += `
@@ -428,8 +591,6 @@
             });
         });
     }
-
-    // --- Video Control Logic ---
 
     function togglePlay(e) {
         if(e) e.stopPropagation();
@@ -448,7 +609,6 @@
     document.getElementById('rewindBtn').onclick = (e) => { e.stopPropagation(); video.currentTime -= 10; };
     document.getElementById('forwardBtn').onclick = (e) => { e.stopPropagation(); video.currentTime += 10; };
 
-    // Update Time and Seekbar
     video.addEventListener('loadedmetadata', () => {
         durationText.textContent = formatTime(video.duration);
     });
@@ -474,7 +634,6 @@
         return h > 0 ? h + ':' + m + ':' + s : m + ':' + s;
     }
 
-    // --- SMOOTH Seekbar Drag Logic ---
     let dragPercentage = 0;
 
     function getPercentage(e) {
@@ -516,16 +675,11 @@
 
     seekBarContainer.addEventListener('mousedown', startDragging);
     seekBarContainer.addEventListener('touchstart', startDragging, {passive: false});
-
     document.addEventListener('mousemove', duringDragging);
     document.addEventListener('touchmove', duringDragging, {passive: false});
-
     document.addEventListener('mouseup', stopDragging);
     document.addEventListener('touchend', stopDragging);
 
-    // --- Bottom Right Icons Functionality ---
-    
-    // 1. Restart
     document.getElementById('restartBtn').onclick = (e) => {
         e.stopPropagation();
         video.currentTime = 0;
@@ -533,11 +687,9 @@
         playPauseIcon.className = 'fa-solid fa-pause';
     };
 
-    // 2. Settings Menu (Speed & Download Instruction)
     const settingsMenu = document.getElementById('settingsMenu');
     const speedOption = document.getElementById('speedOption');
     const downloadOption = document.getElementById('downloadOption');
-
     let speeds = [1, 1.5, 2];
     let speedIndex = 0;
 
@@ -554,34 +706,24 @@
         statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
     };
 
-    // --- ডাউনলোড অ্যালার্ট যোগ করা হয়েছে ---
     downloadOption.onclick = (e) => {
         e.stopPropagation();
         settingsMenu.style.display = 'none';
-
         if(video.src) {
-            alert("ভিডিওটি ডাউনলোড করতে চাইলে, এই স্ক্রিনে যেখানে ভিডিও চলছে সেখানে আঙুল দিয়ে কিছুক্ষণ চেপে ধরে রাখুন (Long Press)। এরপর ব্রাউজার থেকে 'Download video' অপশনটি আসলে সেখানে ক্লিক করুন।");
+            alert("ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।");
         }
     };
 
-    // Close settings menu when clicking anywhere else
-    document.addEventListener('click', () => {
-        settingsMenu.style.display = 'none';
-    });
+    document.addEventListener('click', () => { settingsMenu.style.display = 'none'; });
 
-    // 3. Picture in Picture (Clone)
     document.getElementById('pipBtn').onclick = async (e) => {
         e.stopPropagation();
         try {
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else {
-                await video.requestPictureInPicture();
-            }
+            if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } 
+            else { await video.requestPictureInPicture(); }
         } catch (error) { console.log("PiP not supported"); }
     };
 
-    // 4. Fullscreen (Expand)
     document.getElementById('fullscreenBtn').onclick = (e) => {
         e.stopPropagation();
         if (!document.fullscreenElement) {
@@ -591,7 +733,6 @@
         }
     };
 
-    // --- Auto Hide Controls Logic ---
     let controlsTimeout;
     function showControls() {
         playerControls.style.display = 'flex';
@@ -600,7 +741,7 @@
             controlsTimeout = setTimeout(() => {
                 if(!isDragging) {
                     playerControls.style.display = 'none';
-                    settingsMenu.style.display = 'none'; // Also hide settings menu
+                    settingsMenu.style.display = 'none';
                 }
             }, 3000);
         }
@@ -610,7 +751,6 @@
     videoContainer.addEventListener('touchstart', showControls, {passive: true});
     
     videoContainer.addEventListener('click', (e) => {
-        // Prevent toggling if clicking on control buttons or menu
         if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top') || e.target.closest('.settings-menu')) return;
         
         if (playerControls.style.display === 'none' || playerControls.style.display === '') {
@@ -620,8 +760,7 @@
             settingsMenu.style.display = 'none';
         }
     });
-
 </script>
 
 </body>
-</html>
+    </html>
