@@ -22,6 +22,7 @@
             display: flex;
             justify-content: center;
             height: 100vh;
+            height: 100dvh; /* Fixed: Mobile browser issue */
             color: var(--text-dark);
             overflow: hidden; 
         }
@@ -267,7 +268,8 @@
         }
 
         @media screen and (max-width: 480px) {
-            .main-container { height: 100vh; max-height: 100vh; border-radius: 0; }
+            /* Fixed: Mobile browser issue */
+            .main-container { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; border-radius: 0; }
         }
     </style>
 </head>
