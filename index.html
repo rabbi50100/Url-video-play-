@@ -22,7 +22,7 @@
             display: flex;
             justify-content: center;
             height: 100vh;
-            height: 100dvh; /* Fixed: Mobile browser issue */
+            height: 100dvh; 
             color: var(--text-dark);
             overflow: hidden; 
         }
@@ -30,7 +30,7 @@
         .main-container {
             width: 100%;
             max-width: 480px;
-            height: 100%; /* নিচের ৫টি অপশন দৃশ্যমান করার জন্য এই লাইনটি যোগ করা হয়েছে */
+            height: 100%; 
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -67,6 +67,7 @@
         .status-bar .hd-quality {
             margin-left: auto;
             opacity: 0.7;
+            font-weight: bold;
         }
 
         .video-container {
@@ -168,17 +169,16 @@
 
         .settings-menu {
             position: absolute; bottom: 45px; right: 15px; background: rgba(0, 0, 0, 0.85); border-radius: 10px;
-            display: none; flex-direction: column; min-width: 110px; z-index: 20; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: auto;
+            display: none; flex-direction: column; min-width: 130px; z-index: 20; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: auto;
         }
         .setting-item { padding: 12px 15px; color: white; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
         .setting-item:last-child { border-bottom: none; }
         .setting-item:hover { background: rgba(255, 255, 255, 0.2); }
 
-        /* Modified content card to fit bottom nav */
         .content-card {
             background: white; flex: 1; margin-top: 20px;
             border-radius: 30px 30px 0 0; padding: 20px;
-            padding-bottom: 80px; /* Space for Bottom Nav */
+            padding-bottom: 80px; 
             overflow-y: auto; display: flex; flex-direction: column; z-index: 5;
         }
 
@@ -208,12 +208,13 @@
             display: flex; align-items: center; gap: 15px; cursor: pointer;
         }
         .item-play-icon { background: rgba(211, 47, 47, 0.1); color: var(--primary-red); padding: 12px; border-radius: 12px; font-size: 16px; }
+        .item-poster { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #ddd; }
+        
         .item-info { flex: 1; overflow: hidden; }
         .item-info h4, .item-info p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .item-info h4 { font-size: 16px; font-weight: 600; }
         .item-info p { margin-top: 5px; font-size: 12px; color: var(--text-gray); }
 
-        /* --- New Bottom Navigation Bar CSS --- */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -251,7 +252,6 @@
             color: var(--primary-red);
         }
 
-        /* Profile Section */
         .profile-container {
             text-align: center;
             padding: 20px;
@@ -268,8 +268,33 @@
             border-radius: 20px; color: var(--text-gray); font-weight: bold; margin-top: 20px;
         }
 
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding-bottom: 20px;
+            padding-top: 10px;
+        }
+        .movie-card {
+            background: var(--gray);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .movie-card:hover { transform: scale(1.02); }
+        .movie-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: #ddd;
+        }
+        .movie-card-info { padding: 10px; text-align: center; }
+        .movie-card-info h4 { margin: 0; font-size: 14px; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         @media screen and (max-width: 480px) {
-            /* Fixed: Mobile browser issue */
             .main-container { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; border-radius: 0; }
         }
     </style>
@@ -284,7 +309,7 @@
 
     <div class="status-bar">
         <span class="status-dot"></span> <span id="statusText">Ready to Play</span> 
-        <span class="hd-quality">HD Quality</span>
+        <span class="hd-quality" id="qualityDisplay">Auto</span>
     </div>
 
     <div class="video-container" id="videoContainer">
@@ -303,6 +328,7 @@
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
             <div class="settings-menu" id="settingsMenu">
+                <div class="setting-item" id="qualityOption">বিন বিন জুলুস: Auto</div>
                 <div class="setting-item" id="speedOption">Speed: 1x</div>
                 <div class="setting-item" id="downloadOption">Download</div>
             </div>
@@ -327,7 +353,6 @@
 
     <div class="content-card">
         
-        <!-- 1. HOME SECTION -->
         <div id="home-section" class="nav-section active">
             <div class="input-group">
                 <i class="fa-solid fa-t"></i>
@@ -346,22 +371,21 @@
             </button>
         </div>
 
-        <!-- 2. MOVIES SECTION -->
         <div id="movies-section" class="nav-section">
             <h3 style="margin-top:0;">All Movies</h3>
-            <div class="placeholder-box">
-                <i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
-                Movie Posts & Codes will appear here.
+            <div id="moviesGrid" class="movies-grid">
+                <div class="placeholder-box" style="grid-column: span 2;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
+                    Loading Movies...
+                </div>
             </div>
         </div>
 
-        <!-- 3. HISTORY SECTION -->
         <div id="history-section" class="nav-section">
             <h3 style="margin-top:0;">Your History</h3>
             <div class="history-list" id="historyList"></div>
         </div>
 
-        <!-- 4. FAVORITES SECTION -->
         <div id="favorites-section" class="nav-section">
             <h3 style="margin-top:0;">Favorites</h3>
             <div class="placeholder-box">
@@ -370,14 +394,11 @@
             </div>
         </div>
 
-        <!-- 5. ME SECTION (LOGIN/PROFILE) -->
         <div id="me-section" class="nav-section">
-            <!-- Show when Logged Out -->
             <div id="loginArea" style="text-align:center; padding-top:20px;">
                 <h3 style="margin-bottom: 5px;">Welcome!</h3>
                 <p style="color:var(--text-gray); font-size:14px; margin-bottom:20px;">Please login to sync your data</p>
                 
-                <!-- Email / Password Login Options Added Here -->
                 <div class="input-group">
                     <i class="fa-solid fa-envelope"></i>
                     <input type="email" id="emailInput" placeholder="Email Address">
@@ -394,13 +415,11 @@
 
                 <div style="margin: 15px 0; color: #aaa; font-size: 14px; font-weight: bold;">OR</div>
 
-                <!-- Existing Google Login -->
                 <button class="btn-play btn-google" style="margin-top: 0;" onclick="signInWithGoogle()">
                     <i class="fa-brands fa-google"></i> Login with Google
                 </button>
             </div>
             
-            <!-- Show when Logged In -->
             <div id="profileArea" class="profile-container" style="display:none;">
                 <img id="profilePic" src="" alt="Profile Picture">
                 <h3 id="profileName">User Name</h3>
@@ -413,7 +432,6 @@
         
     </div>
 
-    <!-- 5 Bottom Navigation Options -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchNav('home', this)">
             <i class="fa-solid fa-house"></i>
@@ -466,11 +484,9 @@
     const userDeviceId = getUniqueDeviceId();
     const dbRef = firebase.database().ref('user_history/' + userDeviceId); 
     
-    // --- Auth Logic (Google & Email/Password) ---
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // Google Login
     function signInWithGoogle() {
         auth.signInWithPopup(provider).then((result) => {
             alert("লগইন সফল হয়েছে!");
@@ -479,7 +495,6 @@
         });
     }
 
-    // Email Login Added
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
@@ -496,7 +511,6 @@
             });
     }
 
-    // Email Register Added
     function registerWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
@@ -521,7 +535,6 @@
         });
     }
 
-    // Update 'Me' Section based on Login Status
     auth.onAuthStateChanged((user) => {
         const loginArea = document.getElementById('loginArea');
         const profileArea = document.getElementById('profileArea');
@@ -530,7 +543,6 @@
             loginArea.style.display = 'none';
             profileArea.style.display = 'block';
             
-            // ইমেইল দিয়ে লগইন করলে প্রোফাইল ছবি বা নাম না থাকলে ডিফল্ট দেখানোর ব্যবস্থা
             const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
             document.getElementById('profilePic').src = user.photoURL ? user.photoURL : defaultAvatar;
             document.getElementById('profileName').innerText = user.displayName ? user.displayName : 'My Account';
@@ -541,7 +553,6 @@
         }
     });
 
-    // --- Bottom Navigation Switch Logic ---
     function switchNav(sectionId, clickedElement) {
         document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -552,9 +563,11 @@
         if (sectionId === 'history') {
             loadHistoryFromFirebase();
         }
+        if (sectionId === 'movies') {
+            loadMoviesFromFirebase();
+        }
     }
 
-    // --- Video Player Core Logic (Unchanged) ---
     const video = document.getElementById('videoElement');
     const videoContainer = document.getElementById('videoContainer');
     const playerControls = document.getElementById('playerControls');
@@ -582,10 +595,20 @@
             firebase.database().ref('secure_links/' + inputUrl).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    let finalTitle = titleInput ? titleInput : data.title; 
+                    let finalTitle = titleInput ? titleInput : (data.title || "Unknown Video"); 
+                    let finalPoster = data.poster ? data.poster : ""; 
+
                     document.getElementById('videoTitle').value = finalTitle; 
-                    dbRef.push({ title: finalTitle, url: data.real_url, timestamp: new Date().toLocaleString() });
-                    startPlayer(data.real_url);
+                    
+                    dbRef.push({ 
+                        title: finalTitle, 
+                        url: data.real_url, 
+                        poster: finalPoster, 
+                        timestamp: new Date().toLocaleString() 
+                    });
+                    
+                    // পোস্টার সহ প্লেয়ার স্টার্ট করবে
+                    startPlayer(data.real_url, finalPoster);
                 } else {
                     alert("ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।");
                     statusText.innerText = "Ready to Play";
@@ -597,14 +620,28 @@
             });
         } else {
             if(!titleInput) titleInput = "Unknown Video";
-            dbRef.push({ title: titleInput, url: inputUrl, timestamp: new Date().toLocaleString() });
-            startPlayer(inputUrl);
+            dbRef.push({ 
+                title: titleInput, 
+                url: inputUrl, 
+                poster: "",
+                timestamp: new Date().toLocaleString() 
+            });
+            startPlayer(inputUrl, "");
         }
     }
 
-    function startPlayer(url) {
+    // আপডেট করা startPlayer ফাংশন (যেখানে পোস্টার রিসিভ ও সেট করা হয়েছে)
+    function startPlayer(url, posterUrl = "") {
         document.getElementById('placeholderText').style.display = 'none';
         video.style.display = 'block';
+        
+        // ভিডিও মনিটরে পোস্টার সেট করা হচ্ছে
+        if(posterUrl) {
+            video.poster = posterUrl;
+        } else {
+            video.removeAttribute('poster');
+        }
+
         video.src = url;
         video.play();
         playPauseIcon.className = 'fa-solid fa-pause';
@@ -630,11 +667,26 @@
                 listDiv.innerHTML = "<p style='text-align:center; color:gray;'>No history found.</p>";
                 return;
             }
+            
+            let historyArray = [];
             snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
+                historyArray.push(childSnapshot.val());
+            });
+            historyArray.reverse();
+
+            historyArray.forEach((data) => {
+                let iconOrPoster = `<div class="item-play-icon"><i class="fa-solid fa-play"></i></div>`;
+                if(data.poster && data.poster !== "") {
+                    iconOrPoster = `<img src="${data.poster}" class="item-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x50?text=No+Poster'">`;
+                }
+
+                // হিস্টরি ক্লিক করলেও পোস্টার সহ প্লে হবে
+                let safePoster = data.poster ? data.poster.replace(/'/g, "\\'") : "";
+                let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : "";
+
                 listDiv.innerHTML += `
-                    <div class="history-item" onclick="startPlayer('${data.url}')">
-                        <div class="item-play-icon"><i class="fa-solid fa-play"></i></div>
+                    <div class="history-item" onclick="startPlayer('${safeUrl}', '${safePoster}')">
+                        ${iconOrPoster}
                         <div class="item-info">
                             <h4>${data.title}</h4>
                             <p>${data.url}</p>
@@ -645,6 +697,53 @@
             });
         });
     }
+
+    function loadMoviesFromFirebase() {
+        const gridDiv = document.getElementById('moviesGrid');
+        firebase.database().ref('public_movies').on('value', (snapshot) => {
+            gridDiv.innerHTML = ""; 
+            if(!snapshot.exists()){
+                gridDiv.innerHTML = `<div class="placeholder-box" style="grid-column: span 2;">
+                    <i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
+                    No movies available right now.
+                </div>`;
+                gridDiv.style.display = "block";
+                return;
+            }
+            gridDiv.style.display = "grid";
+            
+            const dataObj = snapshot.val();
+            const keys = Object.keys(dataObj).reverse();
+            
+            keys.forEach(key => {
+                const data = dataObj[key];
+                const safeTitle = data.title ? data.title.replace(/'/g, "\\'") : 'Unknown';
+                const safeCode = data.code ? data.code.replace(/'/g, "\\'") : '';
+                gridDiv.innerHTML += `
+                    <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
+                        <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
+                        <div class="movie-card-info">
+                            <h4>${data.title}</h4>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function playMovie(title, code) {
+        document.getElementById('videoTitle').value = title;
+        document.getElementById('videoUrl').value = code;
+        
+        const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
+        switchNav('home', homeNavBtn);
+        
+        saveAndPlay();
+        
+        document.querySelector('.content-card').scrollTop = 0;
+    }
+
+    loadMoviesFromFirebase();
 
     function togglePlay(e) {
         if(e) e.stopPropagation();
@@ -742,6 +841,22 @@
     };
 
     const settingsMenu = document.getElementById('settingsMenu');
+    
+    const qualityOption = document.getElementById('qualityOption');
+    const qualityDisplay = document.getElementById('qualityDisplay');
+    let qualities = ['Auto', '1080p', '720p', '480p', '360p'];
+    let qualityIndex = 0;
+
+    qualityOption.onclick = (e) => {
+        e.stopPropagation();
+        qualityIndex = (qualityIndex + 1) % qualities.length;
+        let selectedQuality = qualities[qualityIndex];
+        
+        qualityOption.innerText = `বিন বিন জুলুস: ${selectedQuality}`;
+        qualityDisplay.innerText = selectedQuality;
+        statusText.innerText = `Quality: ${selectedQuality}`;
+    };
+
     const speedOption = document.getElementById('speedOption');
     const downloadOption = document.getElementById('downloadOption');
     let speeds = [1, 1.5, 2];
@@ -817,4 +932,4 @@
 </script>
 
 </body>
-    </html>
+</html>
