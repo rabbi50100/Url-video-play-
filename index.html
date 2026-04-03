@@ -111,7 +111,7 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: contain; 
+            object-fit: cover; /* ১. পোস্টার যেন পুরো ফ্রেমে থাকে তার জন্য কভার করা হয়েছে */
             position: absolute;
             top: 0; left: 0;
             display: none; 
@@ -206,6 +206,8 @@
         .history-item {
             background: var(--gray); padding: 15px; border-radius: 20px;
             display: flex; align-items: center; gap: 15px; cursor: pointer;
+            position: relative;
+            padding-right: 45px; 
         }
         .item-play-icon { background: rgba(211, 47, 47, 0.1); color: var(--primary-red); padding: 12px; border-radius: 12px; font-size: 16px; }
         .item-poster { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #ddd; }
@@ -214,6 +216,17 @@
         .item-info h4, .item-info p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .item-info h4 { font-size: 16px; font-weight: 600; }
         .item-info p { margin-top: 5px; font-size: 12px; color: var(--text-gray); }
+
+        .history-options {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px;
+            color: #777;
+            font-size: 18px;
+        }
+        .history-options:hover { color: var(--primary-red); }
 
         .bottom-nav {
             position: absolute;
@@ -282,6 +295,7 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.2s;
+            position: relative; 
         }
         .movie-card:hover { transform: scale(1.02); }
         .movie-card img {
@@ -293,6 +307,26 @@
         }
         .movie-card-info { padding: 10px; text-align: center; }
         .movie-card-info h4 { margin: 0; font-size: 14px; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .fav-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        .fav-btn.active {
+            color: var(--primary-red);
+        }
 
         @media screen and (max-width: 480px) {
             .main-container { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; border-radius: 0; }
@@ -328,7 +362,8 @@
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
             <div class="settings-menu" id="settingsMenu">
-                <div class="setting-item" id="qualityOption">বিন বিন জুলুস: Auto</div>
+                <!-- ২. মেইন ভাষা ইংরেজি করে দেওয়া হয়েছে -->
+                <div class="setting-item" id="qualityOption">Quality: Auto</div>
                 <div class="setting-item" id="speedOption">Speed: 1x</div>
                 <div class="setting-item" id="downloadOption">Download</div>
             </div>
@@ -387,11 +422,6 @@
         </div>
 
         <div id="favorites-section" class="nav-section">
-            <h3 style="margin-top:0;">Favorites</h3>
-            <div class="placeholder-box">
-                <i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>
-                No favorite videos yet.
-            </div>
         </div>
 
         <div id="me-section" class="nav-section">
@@ -461,6 +491,70 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
+    // ==========================================
+    // ৩. Auto Language Translation System
+    // ==========================================
+    const translations = {
+        en: { // Default Main Language English
+            loginSuccess: "Login successful!",
+            loginFailed: "Login failed: ",
+            enterEmailPass: "Please enter email and password!",
+            accCreated: "Account created and login successful!",
+            accFailed: "Account creation failed: ",
+            logoutSuccess: "You have successfully logged out!",
+            enterUrl: "Please enter a Video URL or TG Code!",
+            invalidCode: "Invalid code! The link you provided is incorrect or expired.",
+            serverError: "Server error, please try again later.",
+            deleteHistory: "Do you want to delete this history?",
+            downloadAlert: "To download the video, long press on the video and select 'Download video'.",
+            qualityText: "Quality"
+        },
+        bn: { // Bengali / Bangladesh
+            loginSuccess: "লগইন সফল হয়েছে!",
+            loginFailed: "লগইন ব্যর্থ হয়েছে: ",
+            enterEmailPass: "দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!",
+            accCreated: "অ্যাকাউন্ট তৈরি এবং লগইন সফল হয়েছে!",
+            accFailed: "অ্যাকাউন্ট তৈরি ব্যর্থ হয়েছে: ",
+            logoutSuccess: "আপনি সফলভাবে লগআউট করেছেন!",
+            enterUrl: "দয়া করে ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!",
+            invalidCode: "ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।",
+            serverError: "সার্ভার সমস্যা হচ্ছে, একটু পর আবার চেষ্টা করুন।",
+            deleteHistory: "আপনি কি এই হিস্টোরি ডিলিট করতে চান?",
+            downloadAlert: "ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।",
+            qualityText: "কোয়ালিটি"
+        },
+        hi: { // Hindi / India
+            loginSuccess: "लॉगिन सफल रहा!",
+            loginFailed: "लॉगिन विफल: ",
+            enterEmailPass: "कृपया ईमेल और पासवर्ड दर्ज करें!",
+            accCreated: "खाता बन गया और लॉगिन सफल रहा!",
+            accFailed: "खाता निर्माण विफल: ",
+            logoutSuccess: "आपने सफलतापूर्वक लॉग आउट कर लिया है!",
+            enterUrl: "कृपया वीडियो URL या TG कोड दर्ज करें!",
+            invalidCode: "अमान्य कोड! आपके द्वारा दिया गया लिंक गलत है या समाप्त हो गया है।",
+            serverError: "सर्वर त्रुटि, कृपया कुछ देर बाद प्रयास करें।",
+            deleteHistory: "क्या आप इस इतिहास को हटाना चाहते हैं?",
+            downloadAlert: "वीडियो डाउनलोड करने के लिए, वीडियो पर लॉन्ग प्रेस करें और 'Download video' चुनें।",
+            qualityText: "गुणवत्ता"
+        }
+    };
+
+    // ইউজারের ব্রাউজারের ভাষা ডিটেক্ট করা হচ্ছে
+    const userBrowserLang = navigator.language || navigator.userLanguage;
+    let currentLang = 'en'; // Default English
+    
+    if (userBrowserLang.toLowerCase().includes('bn')) {
+        currentLang = 'bn'; // Bengali
+    } else if (userBrowserLang.toLowerCase().includes('hi')) {
+        currentLang = 'hi'; // Hindi
+    }
+
+    // ট্র্যান্সলেশন ফাংশন
+    function t(key) {
+        return translations[currentLang][key] || translations['en'][key];
+    }
+    // ==========================================
+
     const firebaseConfig = {
         apiKey: "AIzaSyDxENg9lQdYCpcQ_ujZvh_dazfE9Qdogb8",
         authDomain: "telegram-brought.firebaseapp.com",
@@ -487,49 +581,116 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
+    function getFavorites() {
+        return JSON.parse(localStorage.getItem('my_favorites') || '[]');
+    }
+
+    function saveFavorites(favs) {
+        localStorage.setItem('my_favorites', JSON.stringify(favs));
+    }
+
+    function isFavorite(code) {
+        return getFavorites().some(f => f.code === code);
+    }
+
+    function toggleFavorite(event, title, code, poster) {
+        event.stopPropagation(); 
+        let favs = getFavorites();
+        const index = favs.findIndex(f => f.code === code);
+        const iconEl = event.currentTarget.querySelector('i');
+
+        if(index > -1) {
+            favs.splice(index, 1); 
+            iconEl.classList.remove('fa-solid');
+            iconEl.classList.add('fa-regular');
+            event.currentTarget.classList.remove('active');
+        } else {
+            favs.push({ title, code, poster }); 
+            iconEl.classList.remove('fa-regular');
+            iconEl.classList.add('fa-solid');
+            event.currentTarget.classList.add('active');
+        }
+        saveFavorites(favs);
+        loadFavorites(); 
+    }
+
+    function loadFavorites() {
+        const favDiv = document.querySelector('#favorites-section');
+        const favs = getFavorites();
+        let html = `<h3 style="margin-top:0;">Favorites</h3>`;
+
+        if(favs.length === 0) {
+            html += `
+                <div class="placeholder-box">
+                    <i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>
+                    No favorite videos yet.
+                </div>
+            `;
+        } else {
+            html += `<div class="movies-grid">`;
+            favs.forEach(data => {
+                const safeTitle = data.title.replace(/'/g, "\\'");
+                const safeCode = data.code.replace(/'/g, "\\'");
+                html += `
+                    <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
+                        <div class="fav-btn active" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
+                        <div class="movie-card-info">
+                            <h4>${data.title}</h4>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        }
+        favDiv.innerHTML = html;
+    }
+
     function signInWithGoogle() {
         auth.signInWithPopup(provider).then((result) => {
-            alert("লগইন সফল হয়েছে!");
+            alert(t("loginSuccess"));
         }).catch((error) => {
-            alert("লগইন ব্যর্থ হয়েছে: " + error.message);
+            alert(t("loginFailed") + error.message);
         });
     }
 
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
-        if(!email || !password) return alert("দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!");
+        if(!email || !password) return alert(t("enterEmailPass"));
         
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                alert("লগইন সফল হয়েছে!");
+                alert(t("loginSuccess"));
                 document.getElementById('emailInput').value = '';
                 document.getElementById('passwordInput').value = '';
             })
             .catch((error) => {
-                alert("লগইন ব্যর্থ হয়েছে: " + error.message);
+                alert(t("loginFailed") + error.message);
             });
     }
 
     function registerWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
-        if(!email || !password) return alert("দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!");
+        if(!email || !password) return alert(t("enterEmailPass"));
         
         auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                alert("অ্যাকাউন্ট তৈরি এবং লগইন সফল হয়েছে!");
+                alert(t("accCreated"));
                 document.getElementById('emailInput').value = '';
                 document.getElementById('passwordInput').value = '';
             })
             .catch((error) => {
-                alert("অ্যাকাউন্ট তৈরি ব্যর্থ হয়েছে: " + error.message);
+                alert(t("accFailed") + error.message);
             });
     }
 
     function signOut() {
         auth.signOut().then(() => {
-            alert("আপনি সফলভাবে লগআউট করেছেন!");
+            alert(t("logoutSuccess"));
         }).catch((error) => {
             console.error("Logout Failed: ", error);
         });
@@ -566,6 +727,9 @@
         if (sectionId === 'movies') {
             loadMoviesFromFirebase();
         }
+        if (sectionId === 'favorites') {
+            loadFavorites();
+        }
     }
 
     const video = document.getElementById('videoElement');
@@ -585,7 +749,7 @@
         let inputUrl = document.getElementById('videoUrl').value.trim(); 
         let titleInput = document.getElementById('videoTitle').value.trim();
 
-        if(!inputUrl) return alert("দয়া করে ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!");
+        if(!inputUrl) return alert(t("enterUrl"));
 
         videoLoader.style.display = 'block';
         document.getElementById('placeholderText').style.display = 'none';
@@ -607,15 +771,14 @@
                         timestamp: new Date().toLocaleString() 
                     });
                     
-                    // পোস্টার সহ প্লেয়ার স্টার্ট করবে
                     startPlayer(data.real_url, finalPoster);
                 } else {
-                    alert("ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।");
+                    alert(t("invalidCode"));
                     statusText.innerText = "Ready to Play";
                     videoLoader.style.display = 'none'; 
                 }
             }).catch(error => {
-                alert("সার্ভার সমস্যা হচ্ছে, একটু পর আবার চেষ্টা করুন।");
+                alert(t("serverError"));
                 videoLoader.style.display = 'none'; 
             });
         } else {
@@ -630,12 +793,12 @@
         }
     }
 
-    // আপডেট করা startPlayer ফাংশন (যেখানে পোস্টার রিসিভ ও সেট করা হয়েছে)
     function startPlayer(url, posterUrl = "") {
         document.getElementById('placeholderText').style.display = 'none';
         video.style.display = 'block';
         
-        // ভিডিও মনিটরে পোস্টার সেট করা হচ্ছে
+        video.style.objectFit = 'cover'; // পোস্টার পুরো ফ্রেম কভার করবে
+
         if(posterUrl) {
             video.poster = posterUrl;
         } else {
@@ -652,12 +815,20 @@
     video.addEventListener('playing', () => {
         videoLoader.style.display = 'none';
         statusText.innerText = "Playing";
+        video.style.objectFit = 'contain'; // ভিডিও প্লে শুরু হলে অরিজিনাল সাইজে আসবে যাতে ভিডিও না কাটে
     });
 
     video.addEventListener('waiting', () => {
         videoLoader.style.display = 'block';
         statusText.innerText = "Buffering...";
     });
+
+    function deleteHistoryItem(event, key) {
+        event.stopPropagation(); 
+        if(confirm(t("deleteHistory"))) {
+            dbRef.child(key).remove();
+        }
+    }
 
     function loadHistoryFromFirebase() {
         const listDiv = document.getElementById('historyList');
@@ -670,7 +841,9 @@
             
             let historyArray = [];
             snapshot.forEach((childSnapshot) => {
-                historyArray.push(childSnapshot.val());
+                let data = childSnapshot.val();
+                data.key = childSnapshot.key; 
+                historyArray.push(data);
             });
             historyArray.reverse();
 
@@ -680,7 +853,6 @@
                     iconOrPoster = `<img src="${data.poster}" class="item-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x50?text=No+Poster'">`;
                 }
 
-                // হিস্টরি ক্লিক করলেও পোস্টার সহ প্লে হবে
                 let safePoster = data.poster ? data.poster.replace(/'/g, "\\'") : "";
                 let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : "";
 
@@ -689,8 +861,10 @@
                         ${iconOrPoster}
                         <div class="item-info">
                             <h4>${data.title}</h4>
-                            <p>${data.url}</p>
                             <p><small>${data.timestamp}</small></p>
+                        </div>
+                        <div class="history-options" onclick="deleteHistoryItem(event, '${data.key}')">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
                         </div>
                     </div>
                 `;
@@ -719,8 +893,13 @@
                 const data = dataObj[key];
                 const safeTitle = data.title ? data.title.replace(/'/g, "\\'") : 'Unknown';
                 const safeCode = data.code ? data.code.replace(/'/g, "\\'") : '';
+                const isFav = isFavorite(data.code);
+
                 gridDiv.innerHTML += `
                     <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
+                        <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
+                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        </div>
                         <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
                         <div class="movie-card-info">
                             <h4>${data.title}</h4>
@@ -744,6 +923,7 @@
     }
 
     loadMoviesFromFirebase();
+    loadFavorites(); 
 
     function togglePlay(e) {
         if(e) e.stopPropagation();
@@ -847,14 +1027,17 @@
     let qualities = ['Auto', '1080p', '720p', '480p', '360p'];
     let qualityIndex = 0;
 
+    // ডিফল্ট ল্যাঙ্গুয়েজ অনুযায়ী কোয়ালিটির লেখা ঠিক করা হয়েছে
+    qualityOption.innerText = `${t("qualityText")}: Auto`;
+
     qualityOption.onclick = (e) => {
         e.stopPropagation();
         qualityIndex = (qualityIndex + 1) % qualities.length;
         let selectedQuality = qualities[qualityIndex];
         
-        qualityOption.innerText = `বিন বিন জুলুস: ${selectedQuality}`;
+        qualityOption.innerText = `${t("qualityText")}: ${selectedQuality}`;
         qualityDisplay.innerText = selectedQuality;
-        statusText.innerText = `Quality: ${selectedQuality}`;
+        statusText.innerText = `${t("qualityText")}: ${selectedQuality}`;
     };
 
     const speedOption = document.getElementById('speedOption');
@@ -879,7 +1062,7 @@
         e.stopPropagation();
         settingsMenu.style.display = 'none';
         if(video.src) {
-            alert("ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।");
+            alert(t("downloadAlert"));
         }
     };
 
