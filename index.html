@@ -6,7 +6,6 @@
     <title>Url Video Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* আপনার সিএসএস-এ কোনো পরিবর্তন করা হয়নি */
         :root {
             --primary-red: #d32f2f;
             --white: #ffffff;
@@ -47,7 +46,27 @@
             align-items: center;
         }
         header h2 { margin: 0; font-size: 20px; font-weight: 600; }
-        header .fa-ellipsis-vertical { font-size: 20px; }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-lang-select {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 5px;
+            padding: 3px 5px;
+            outline: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .header-lang-select option {
+            color: black;
+        }
+        
+        header .fa-ellipsis-vertical { font-size: 20px; cursor: pointer; }
 
         .status-bar {
             background: rgba(255,255,255,0.2);
@@ -199,6 +218,29 @@
             font-weight: bold; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 12px; margin-top: 10px; text-transform: uppercase;
         }
+
+        /* নতুন এড বাটনের ডিজাইন */
+        .btn-ad {
+            background: #ff9800;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-ad.success {
+            background: #4caf50;
+        }
         
         .btn-google { background: #4285F4; }
         .btn-logout { background: #333; margin-top: 15px; }
@@ -339,7 +381,14 @@
 <div class="main-container">
     <header>
         <h2>Url Video Player</h2>
-        <i class="fa-solid fa-ellipsis-vertical"></i>
+        <div class="header-right">
+            <select id="languageSelect" class="header-lang-select" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="bn">Bengali</option>
+                <option value="hi">Hindi</option>
+            </select>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
     </header>
 
     <div class="status-bar">
@@ -350,7 +399,7 @@
     <div class="video-container" id="videoContainer">
         <span id="placeholderText">ADD OR SELECT VIDEO TO PLAY</span>
         <div class="video-loader" id="videoLoader"></div>
-        <video id="videoElement" playsinline preload="auto"></video>
+        <video id="videoElement" playsinline preload="auto" autoplay></video>
         
         <div class="player-controls" id="playerControls">
             <div class="controls-top">
@@ -389,18 +438,25 @@
     <div class="content-card">
         
         <div id="home-section" class="nav-section active">
+            
+            <!-- সবার উপরে এড দেখার বাটন -->
+            <button id="adBtn" class="btn-ad" onclick="watchAd()">
+                <i class="fa-solid fa-rectangle-ad"></i> আগে এড দেখো
+            </button>
+
+            <!-- ভিডিও টাইটেল ইনপুট -->
             <div class="input-group">
                 <i class="fa-solid fa-t"></i>
                 <input type="text" id="videoTitle" placeholder="Video Title">
             </div>
+
+            <!-- ভিডিও লিংক ইনপুট -->
             <div class="input-group">
                 <i class="fa-solid fa-link"></i>
                 <input type="text" id="videoUrl" placeholder="Video URL or TG Code">
             </div>
-            <div class="input-group">
-                <i class="fa-brands fa-internet-explorer"></i>
-                <input type="text" id="userAgent" placeholder="User Agent (Optional)">
-            </div>
+
+            <!-- সেভ এন্ড প্লে বাটন -->
             <button class="btn-play" onclick="saveAndPlay()">
                 <i class="fa-solid fa-play"></i> SAVE AND PLAY
             </button>
@@ -425,7 +481,8 @@
         </div>
 
         <div id="me-section" class="nav-section">
-            <div id="loginArea" style="text-align:center; padding-top:20px;">
+
+            <div id="loginArea" style="text-align:center; padding-top:10px;">
                 <h3 style="margin-bottom: 5px;">Welcome!</h3>
                 <p style="color:var(--text-gray); font-size:14px; margin-bottom:20px;">Please login to sync your data</p>
                 
@@ -500,12 +557,13 @@
             accCreated: "Account created and login successful!",
             accFailed: "Account creation failed: ",
             logoutSuccess: "You have successfully logged out!",
-            enterUrl: "Please enter a Video URL or TG Code!",
+            enterUrl: "Please enter a valid Video URL or TG Code!",
             invalidCode: "Invalid code! The link you provided is incorrect or expired.",
             serverError: "Server error, please try again later.",
             deleteHistory: "Do you want to delete this history?",
             downloadAlert: "To download the video, long press on the video and select 'Download video'.",
-            qualityText: "Quality"
+            qualityText: "Quality",
+            invalidUrlError: "Invalid URL! Please enter a valid HTTP/HTTPS link."
         },
         bn: { 
             loginSuccess: "লগইন সফল হয়েছে!",
@@ -514,12 +572,13 @@
             accCreated: "অ্যাকাউন্ট তৈরি এবং লগইন সফল হয়েছে!",
             accFailed: "অ্যাকাউন্ট তৈরি ব্যর্থ হয়েছে: ",
             logoutSuccess: "আপনি সফলভাবে লগআউট করেছেন!",
-            enterUrl: "দয়া করে ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!",
+            enterUrl: "দয়া করে সঠিক ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!",
             invalidCode: "ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।",
             serverError: "সার্ভার সমস্যা হচ্ছে, একটু পর আবার চেষ্টা করুন।",
             deleteHistory: "আপনি কি এই হিস্টোরি ডিলিট করতে চান?",
             downloadAlert: "ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।",
-            qualityText: "কোয়ালিটি"
+            qualityText: "কোয়ালিটি",
+            invalidUrlError: "ভুল ইউআরএল! দয়া করে সঠিক একটি HTTP/HTTPS লিংক দিন।"
         },
         hi: { 
             loginSuccess: "लॉगिन सफल रहा!",
@@ -528,19 +587,73 @@
             accCreated: "खाता बन गया और लॉगिन सफल रहा!",
             accFailed: "खाता निर्माण विफल: ",
             logoutSuccess: "आपने सफलतापूर्वक लॉग आउट कर लिया है!",
-            enterUrl: "कृपया वीडियो URL या TG कोड दर्ज करें!",
+            enterUrl: "कृपया मान्य वीडियो URL या TG कोड दर्ज करें!",
             invalidCode: "अमान्य कोड! आपके द्वारा दिया गया लिंक गलत है या समाप्त हो गया है।",
             serverError: "सर्वर त्रुटि, कृपया कुछ देर बाद प्रयास करें।",
-            deleteHistory: "क्या স্ক্রিনशটে देखि इतिहास को हटाना चाहते हैं?",
+            deleteHistory: "क्या आप इस इतिहास को हटाना चाहते हैं?",
             downloadAlert: "वीडियो डाउनलोड करने के लिए, वीडियो पर लॉन्ग प्रेस करें और 'Download video' चुनें।",
-            qualityText: "गुणवत्ता"
+            qualityText: "गुणवत्ता",
+            invalidUrlError: "अमान्य URL! कृपया एक मान्य HTTP/HTTPS लिंक दर्ज करें।"
         }
     };
 
-    const userBrowserLang = navigator.language || navigator.userLanguage;
     let currentLang = 'en'; 
-    if (userBrowserLang.toLowerCase().includes('bn')) currentLang = 'bn'; 
-    else if (userBrowserLang.toLowerCase().includes('hi')) currentLang = 'hi'; 
+    let isAdWatched = false; // এড দেখার স্ট্যাটাস ট্র্যাকিং করার জন্য ভেরিয়েবল
+
+    // এড ফাংশন: এখানে পরবর্তীতে আপনার ডাইরেক্ট লিংক বা এডের কোড বসাতে পারবেন
+    function watchAd() {
+        let adBtn = document.getElementById('adBtn');
+        
+        // এখানে আপনার আসল এডের কোড বসাবেন। 
+        // আপাতত এটি একটি ডেমো লোডার যা ৩ সেকেন্ড পর এড দেখা সম্পন্ন হয়েছে বলে ধরে নিবে।
+        adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> এড লোড হচ্ছে...`;
+        adBtn.disabled = true;
+
+        setTimeout(() => {
+            alert("এড দেখা সম্পন্ন হয়েছে! এখন আপনি ভিডিও প্লে করতে পারবেন।");
+            isAdWatched = true; // এড দেখা হয়েছে এটি ট্রু (true) করে দেওয়া হলো
+            adBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> এড দেখা সম্পন্ন`;
+            adBtn.classList.add('success');
+            adBtn.disabled = false;
+        }, 3000);
+    }
+
+    async function setLanguageFromLocation() {
+        let savedLang = localStorage.getItem('app_lang');
+        if (savedLang && translations[savedLang]) {
+            currentLang = savedLang;
+            document.getElementById('languageSelect').value = currentLang;
+            return;
+        }
+        
+        try {
+            let response = await fetch('https://ipapi.co/json/');
+            let data = await response.json();
+            
+            if (data.country_code === 'BD') {
+                currentLang = 'bn';
+            } else if (data.country_code === 'IN') {
+                currentLang = 'hi';
+            } else {
+                currentLang = 'en';
+            }
+        } catch (e) {
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang.toLowerCase().includes('bn')) currentLang = 'bn'; 
+            else if (browserLang.toLowerCase().includes('hi')) currentLang = 'hi'; 
+            else currentLang = 'en';
+        }
+        
+        localStorage.setItem('app_lang', currentLang);
+        document.getElementById('languageSelect').value = currentLang;
+    }
+
+    function changeLanguage() {
+        let langDropdown = document.getElementById('languageSelect');
+        currentLang = langDropdown.value;
+        localStorage.setItem('app_lang', currentLang);
+        alert("Language updated!");
+    }
 
     function t(key) {
         return translations[currentLang][key] || translations['en'][key];
@@ -568,9 +681,34 @@
 
     const userDeviceId = getUniqueDeviceId();
     const dbRef = firebase.database().ref('user_history/' + userDeviceId); 
-    
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
+
+    window.addEventListener('load', () => {
+        setLanguageFromLocation();
+        video.muted = true;
+
+        firebase.database().ref('admin_settings/default_video').once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                let data = snapshot.val();
+                let adminVideoUrl = data.url || "https://www.w3schools.com/html/mov_bbb.mp4";
+                let adminPoster = data.poster || "https://via.placeholder.com/480x250?text=Welcome+Video";
+                let adminTitle = data.title || "Welcome Video";
+
+                document.getElementById('videoTitle').value = adminTitle;
+                startPlayer(adminVideoUrl, adminPoster);
+            } else {
+                const defaultUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; 
+                const defaultPoster = "https://via.placeholder.com/480x250?text=How+to+Watch+and+Download+Movies";
+                document.getElementById('videoTitle').value = "How to Watch & Download";
+                startPlayer(defaultUrl, defaultPoster);
+            }
+        }).catch(() => {
+            const defaultUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; 
+            document.getElementById('videoTitle').value = "How to Watch & Download";
+            startPlayer(defaultUrl, "");
+        });
+    });
 
     function getFavorites() { return JSON.parse(localStorage.getItem('my_favorites') || '[]'); }
     function saveFavorites(favs) { localStorage.setItem('my_favorites', JSON.stringify(favs)); }
@@ -676,26 +814,30 @@
     const statusText = document.getElementById('statusText');
     const videoLoader = document.getElementById('videoLoader');
 
-    // ==========================================
-    // ১. আপনার নির্দেশ অনুযায়ী ডাটাবেস সার্চ আপডেট করা হলো
-    // ==========================================
+    let videoErrorTimeout; 
+
     function saveAndPlay() {
+        // --- নতুন চেক সিস্টেম: এড দেখেছে কি না যাচাই করা ---
+        if (!isAdWatched) {
+            alert("এরর: আপনাকে আগে এড দেখতে হবে! উপরের 'আগে এড দেখো' বাটনে ক্লিক করুন।");
+            return; // এখানেই থেমে যাবে, ভিডিও প্লে হবে না
+        }
+
         let tgCode = document.getElementById('videoUrl').value.trim(); 
         
         if(!tgCode) return alert(t("enterUrl"));
 
+        video.muted = false; 
         videoLoader.style.display = 'block';
         document.getElementById('placeholderText').style.display = 'none';
 
-        // ডাটাবেসে ঠিক আপনার দেওয়া TG কোড দিয়েই খুঁজবে
         if (tgCode.toUpperCase().startsWith("TG-")) {
             statusText.innerText = "Checking Code...";
-            let searchCode = tgCode.toUpperCase(); // ছোট হাতের দিলেও বড় হাতের করে নেবে
+            let searchCode = tgCode.toUpperCase(); 
 
             firebase.database().ref('secure_links/' + searchCode).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     let data = snapshot.val();
-                    // আপনার অ্যাডমিন প্যানেলে দেওয়া 'নাম', 'পোস্টার' এবং 'লিংক' 
                     let actualUrl = data.link || data.url || data.real_url;
                     let movieName = data.title || data.name || "Unknown Movie";
                     let posterImage = data.poster || data.image || "";
@@ -728,7 +870,13 @@
                 videoLoader.style.display = 'none';
             });
         } else {
-            // যদি কেউ সরাসরি লিংক দেয় 
+            if(!tgCode.startsWith("http")) {
+                alert(t("invalidUrlError"));
+                videoLoader.style.display = 'none';
+                statusText.innerText = "Invalid URL";
+                return;
+            }
+
             let titleInput = document.getElementById('videoTitle').value.trim() || "Unknown Video";
             dbRef.push({ 
                 title: titleInput, 
@@ -738,15 +886,19 @@
             });
             startPlayer(tgCode, "");
         }
+        
+        // প্লে হওয়ার পর স্ট্যাটাস রিসেট করা (যাতে পরের ভিডিও দেখার সময় আবার এড দেখতে হয়)
+        isAdWatched = false;
+        let adBtn = document.getElementById('adBtn');
+        adBtn.innerHTML = `<i class="fa-solid fa-rectangle-ad"></i> আগে এড দেখো`;
+        adBtn.classList.remove('success');
     }
 
-    // ==========================================
-    // ২. ভিডিও লোডিং এ আটকে থাকার সমস্যার সমাধান
-    // ==========================================
     function startPlayer(url, posterUrl = "") {
         document.getElementById('placeholderText').style.display = 'none';
         video.style.display = 'block';
         video.style.objectFit = 'cover'; 
+        clearTimeout(videoErrorTimeout); 
 
         if(posterUrl) {
             video.poster = posterUrl;
@@ -754,7 +906,6 @@
             video.removeAttribute('poster');
         }
 
-        // ব্রাউজার যেন আগের ভিডিওর ক্যাশে আটকে না থাকে তাই এটি যোগ করা হলো
         video.pause();
         video.removeAttribute('src');
         video.load();
@@ -766,9 +917,16 @@
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
                 video.play().catch(e => console.log(e));
             });
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    statusText.innerText = "Error: Invalid or Broken Link!";
+                    videoLoader.style.display = 'none';
+                    playPauseIcon.className = 'fa-solid fa-play';
+                }
+            });
         } else {
             video.src = url;
-            video.load(); // নতুন লিংক ফোর্স লোড করার জন্য 
+            video.load(); 
             
             let playPromise = video.play();
             if (playPromise !== undefined) {
@@ -785,9 +943,18 @@
         showControls();
         statusText.innerText = "Loading Video...";
         videoLoader.style.display = 'block';
+
+        videoErrorTimeout = setTimeout(() => {
+            if(video.readyState === 0) {
+                statusText.innerText = "Timeout: Invalid or Broken URL!";
+                videoLoader.style.display = 'none';
+                playPauseIcon.className = 'fa-solid fa-play';
+            }
+        }, 15000);
     }
 
     video.addEventListener('playing', () => {
+        clearTimeout(videoErrorTimeout); 
         videoLoader.style.display = 'none';
         statusText.innerText = "Playing";
         video.style.objectFit = 'contain'; 
@@ -798,9 +965,9 @@
         statusText.innerText = "Buffering...";
     });
 
-    // ৩. যদি ভিডিও লিংক কাজ না করে তবে অনন্তকাল না ঘুরে বলে দেবে
     video.addEventListener('error', () => {
-        statusText.innerText = "Video Format / Network Error!";
+        clearTimeout(videoErrorTimeout);
+        statusText.innerText = "Error: Invalid Video URL!";
         videoLoader.style.display = 'none';
         playPauseIcon.className = 'fa-solid fa-play';
     });
@@ -874,7 +1041,11 @@
         document.getElementById('videoUrl').value = code;
         const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
         switchNav('home', homeNavBtn);
+        
+        // এখানে মুভি কার্ডে ক্লিক করার পর ইউজারকে অটো সেভ ও প্লে করতে চাইলে এড দেখা বাধ্যতামূলক করা হয়েছে।
+        // সেভ এন্ড প্লে বাটনটি ক্লিক করার ইভেন্ট কল করা হয়েছে।
         saveAndPlay();
+        
         document.querySelector('.content-card').scrollTop = 0;
     }
 
@@ -989,6 +1160,8 @@
     videoContainer.addEventListener('touchstart', showControls, {passive: true});
     
     videoContainer.addEventListener('click', (e) => {
+        if (video.muted) video.muted = false;
+
         if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top') || e.target.closest('.settings-menu')) return;
         if (playerControls.style.display === 'none' || playerControls.style.display === '') { showControls(); } else { playerControls.style.display = 'none'; settingsMenu.style.display = 'none'; }
     });
