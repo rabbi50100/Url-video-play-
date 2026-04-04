@@ -219,7 +219,7 @@
             justify-content: center; gap: 12px; margin-top: 10px; text-transform: uppercase;
         }
 
-        /* নতুন এড বাটনের ডিজাইন */
+        /* এড বাটনের ডিজাইন */
         .btn-ad {
             background: #ff9800;
             color: white;
@@ -239,7 +239,7 @@
             transition: 0.3s;
         }
         .btn-ad.success {
-            background: #4caf50;
+            background: #4caf50 !important;
         }
         
         .btn-google { background: #4285F4; }
@@ -598,24 +598,57 @@
     };
 
     let currentLang = 'en'; 
-    let isAdWatched = false; // এড দেখার স্ট্যাটাস ট্র্যাকিং করার জন্য ভেরিয়েবল
+    let isAdWatched = false; 
+    let isAdClicked = false;
+    let adClickTime = 0;
+    let adTimerInterval;
 
-    // এড ফাংশন: এখানে পরবর্তীতে আপনার ডাইরেক্ট লিংক বা এডের কোড বসাতে পারবেন
+    // --- নতুন এড ফাংশন (টাইমার ও চেকিন সিস্টেম) ---
     function watchAd() {
         let adBtn = document.getElementById('adBtn');
         
-        // এখানে আপনার আসল এডের কোড বসাবেন। 
-        // আপাতত এটি একটি ডেমো লোডার যা ৩ সেকেন্ড পর এড দেখা সম্পন্ন হয়েছে বলে ধরে নিবে।
-        adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> এড লোড হচ্ছে...`;
-        adBtn.disabled = true;
-
-        setTimeout(() => {
-            alert("এড দেখা সম্পন্ন হয়েছে! এখন আপনি ভিডিও প্লে করতে পারবেন।");
-            isAdWatched = true; // এড দেখা হয়েছে এটি ট্রু (true) করে দেওয়া হলো
-            adBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> এড দেখা সম্পন্ন`;
-            adBtn.classList.add('success');
-            adBtn.disabled = false;
-        }, 3000);
+        if (!isAdClicked) {
+            // প্রথম ক্লিক: এড ওপেন করবে এবং টাইমার শুরু হবে
+            // 'https://your-ad-link.com' এর জায়গায় আপনার ডাইরেক্ট এডের লিংক বসান
+            window.open('https://your-ad-link.com', '_blank'); 
+            
+            isAdClicked = true;
+            adClickTime = Date.now();
+            let remainingTime = 10;
+            
+            adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> চেক ইন (${remainingTime}s)`;
+            adBtn.style.background = "#1976d2"; // নীল রং
+            
+            adTimerInterval = setInterval(() => {
+                let elapsed = Math.floor((Date.now() - adClickTime) / 1000);
+                remainingTime = 10 - elapsed;
+                
+                if (remainingTime > 0) {
+                    adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> চেক ইন (${remainingTime}s)`;
+                } else {
+                    clearInterval(adTimerInterval);
+                    adBtn.innerHTML = `<i class="fa-solid fa-check-double"></i> চেক ইন করুন`;
+                    adBtn.style.background = "#f57c00"; // কমলা রং (তৈরি)
+                }
+            }, 1000);
+            
+        } else {
+            // দ্বিতীয় ক্লিক (চেক ইন): সময় যাচাই করবে
+            let elapsed = Date.now() - adClickTime;
+            
+            if (elapsed < 10000) {
+                // ১০ সেকেন্ড পূর্ণ হয়নি
+                alert("এডে ক্লিক করার পর আপনাকে অন্তত ১০ সেকেন্ড অপেক্ষা করতে হবে! তারপর 'চেক ইন' বাটনে ক্লিক করুন।");
+            } else {
+                // ১০ সেকেন্ড পূর্ণ হয়েছে
+                isAdWatched = true;
+                clearInterval(adTimerInterval);
+                adBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> এড দেখা সম্পন্ন`;
+                adBtn.classList.add('success');
+                adBtn.style.background = ""; // inline স্টাইল মুছে সিএসএস (.success) কাজ করাবে
+                alert("এড চেক-ইন সফল হয়েছে! এখন আপনি ভিডিও প্লে করতে পারবেন।");
+            }
+        }
     }
 
     async function setLanguageFromLocation() {
@@ -817,10 +850,9 @@
     let videoErrorTimeout; 
 
     function saveAndPlay() {
-        // --- নতুন চেক সিস্টেম: এড দেখেছে কি না যাচাই করা ---
         if (!isAdWatched) {
             alert("এরর: আপনাকে আগে এড দেখতে হবে! উপরের 'আগে এড দেখো' বাটনে ক্লিক করুন।");
-            return; // এখানেই থেমে যাবে, ভিডিও প্লে হবে না
+            return; 
         }
 
         let tgCode = document.getElementById('videoUrl').value.trim(); 
@@ -889,9 +921,13 @@
         
         // প্লে হওয়ার পর স্ট্যাটাস রিসেট করা (যাতে পরের ভিডিও দেখার সময় আবার এড দেখতে হয়)
         isAdWatched = false;
+        isAdClicked = false;
+        clearInterval(adTimerInterval);
+        
         let adBtn = document.getElementById('adBtn');
         adBtn.innerHTML = `<i class="fa-solid fa-rectangle-ad"></i> আগে এড দেখো`;
         adBtn.classList.remove('success');
+        adBtn.style.background = ""; // আগের কালারে ফেরত
     }
 
     function startPlayer(url, posterUrl = "") {
@@ -1041,11 +1077,7 @@
         document.getElementById('videoUrl').value = code;
         const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
         switchNav('home', homeNavBtn);
-        
-        // এখানে মুভি কার্ডে ক্লিক করার পর ইউজারকে অটো সেভ ও প্লে করতে চাইলে এড দেখা বাধ্যতামূলক করা হয়েছে।
-        // সেভ এন্ড প্লে বাটনটি ক্লিক করার ইভেন্ট কল করা হয়েছে।
         saveAndPlay();
-        
         document.querySelector('.content-card').scrollTop = 0;
     }
 
