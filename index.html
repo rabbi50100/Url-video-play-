@@ -6,6 +6,7 @@
     <title>Url Video Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* আপনার সিএসএস-এ কোনো পরিবর্তন করা হয়নি */
         :root {
             --primary-red: #d32f2f;
             --white: #ffffff;
@@ -111,7 +112,7 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* ১. পোস্টার যেন পুরো ফ্রেমে থাকে তার জন্য কভার করা হয়েছে */
+            object-fit: cover; 
             position: absolute;
             top: 0; left: 0;
             display: none; 
@@ -349,7 +350,7 @@
     <div class="video-container" id="videoContainer">
         <span id="placeholderText">ADD OR SELECT VIDEO TO PLAY</span>
         <div class="video-loader" id="videoLoader"></div>
-        <video id="videoElement" playsinline></video>
+        <video id="videoElement" playsinline preload="auto"></video>
         
         <div class="player-controls" id="playerControls">
             <div class="controls-top">
@@ -362,7 +363,6 @@
                 <div class="circle-control forward" id="forwardBtn"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
             <div class="settings-menu" id="settingsMenu">
-                <!-- ২. মেইন ভাষা ইংরেজি করে দেওয়া হয়েছে -->
                 <div class="setting-item" id="qualityOption">Quality: Auto</div>
                 <div class="setting-item" id="speedOption">Speed: 1x</div>
                 <div class="setting-item" id="downloadOption">Download</div>
@@ -489,13 +489,11 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
-    // ==========================================
-    // ৩. Auto Language Translation System
-    // ==========================================
     const translations = {
-        en: { // Default Main Language English
+        en: { 
             loginSuccess: "Login successful!",
             loginFailed: "Login failed: ",
             enterEmailPass: "Please enter email and password!",
@@ -509,7 +507,7 @@
             downloadAlert: "To download the video, long press on the video and select 'Download video'.",
             qualityText: "Quality"
         },
-        bn: { // Bengali / Bangladesh
+        bn: { 
             loginSuccess: "লগইন সফল হয়েছে!",
             loginFailed: "লগইন ব্যর্থ হয়েছে: ",
             enterEmailPass: "দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!",
@@ -523,7 +521,7 @@
             downloadAlert: "ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।",
             qualityText: "কোয়ালিটি"
         },
-        hi: { // Hindi / India
+        hi: { 
             loginSuccess: "लॉगिन सफल रहा!",
             loginFailed: "लॉगिन विफल: ",
             enterEmailPass: "कृपया ईमेल और पासवर्ड दर्ज करें!",
@@ -533,27 +531,20 @@
             enterUrl: "कृपया वीडियो URL या TG कोड दर्ज करें!",
             invalidCode: "अमान्य कोड! आपके द्वारा दिया गया लिंक गलत है या समाप्त हो गया है।",
             serverError: "सर्वर त्रुटि, कृपया कुछ देर बाद प्रयास करें।",
-            deleteHistory: "क्या आप इस इतिहास को हटाना चाहते हैं?",
+            deleteHistory: "क्या স্ক্রিনशটে देखि इतिहास को हटाना चाहते हैं?",
             downloadAlert: "वीडियो डाउनलोड करने के लिए, वीडियो पर लॉन्ग प्रेस करें और 'Download video' चुनें।",
             qualityText: "गुणवत्ता"
         }
     };
 
-    // ইউজারের ব্রাউজারের ভাষা ডিটেক্ট করা হচ্ছে
     const userBrowserLang = navigator.language || navigator.userLanguage;
-    let currentLang = 'en'; // Default English
-    
-    if (userBrowserLang.toLowerCase().includes('bn')) {
-        currentLang = 'bn'; // Bengali
-    } else if (userBrowserLang.toLowerCase().includes('hi')) {
-        currentLang = 'hi'; // Hindi
-    }
+    let currentLang = 'en'; 
+    if (userBrowserLang.toLowerCase().includes('bn')) currentLang = 'bn'; 
+    else if (userBrowserLang.toLowerCase().includes('hi')) currentLang = 'hi'; 
 
-    // ট্র্যান্সলেশন ফাংশন
     function t(key) {
         return translations[currentLang][key] || translations['en'][key];
     }
-    // ==========================================
 
     const firebaseConfig = {
         apiKey: "AIzaSyDxENg9lQdYCpcQ_ujZvh_dazfE9Qdogb8",
@@ -581,17 +572,9 @@
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    function getFavorites() {
-        return JSON.parse(localStorage.getItem('my_favorites') || '[]');
-    }
-
-    function saveFavorites(favs) {
-        localStorage.setItem('my_favorites', JSON.stringify(favs));
-    }
-
-    function isFavorite(code) {
-        return getFavorites().some(f => f.code === code);
-    }
+    function getFavorites() { return JSON.parse(localStorage.getItem('my_favorites') || '[]'); }
+    function saveFavorites(favs) { localStorage.setItem('my_favorites', JSON.stringify(favs)); }
+    function isFavorite(code) { return getFavorites().some(f => f.code === code); }
 
     function toggleFavorite(event, title, code, poster) {
         event.stopPropagation(); 
@@ -620,12 +603,7 @@
         let html = `<h3 style="margin-top:0;">Favorites</h3>`;
 
         if(favs.length === 0) {
-            html += `
-                <div class="placeholder-box">
-                    <i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>
-                    No favorite videos yet.
-                </div>
-            `;
+            html += `<div class="placeholder-box"><i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>No favorite videos yet.</div>`;
         } else {
             html += `<div class="movies-grid">`;
             favs.forEach(data => {
@@ -637,75 +615,36 @@
                             <i class="fa-solid fa-heart"></i>
                         </div>
                         <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
-                        <div class="movie-card-info">
-                            <h4>${data.title}</h4>
-                        </div>
-                    </div>
-                `;
+                        <div class="movie-card-info"><h4>${data.title}</h4></div>
+                    </div>`;
             });
             html += `</div>`;
         }
         favDiv.innerHTML = html;
     }
 
-    function signInWithGoogle() {
-        auth.signInWithPopup(provider).then((result) => {
-            alert(t("loginSuccess"));
-        }).catch((error) => {
-            alert(t("loginFailed") + error.message);
-        });
-    }
-
+    function signInWithGoogle() { auth.signInWithPopup(provider).then((result) => { alert(t("loginSuccess")); }).catch((error) => { alert(t("loginFailed") + error.message); }); }
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
         if(!email || !password) return alert(t("enterEmailPass"));
-        
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                alert(t("loginSuccess"));
-                document.getElementById('emailInput').value = '';
-                document.getElementById('passwordInput').value = '';
-            })
-            .catch((error) => {
-                alert(t("loginFailed") + error.message);
-            });
+        auth.signInWithEmailAndPassword(email, password).then(() => { alert(t("loginSuccess")); document.getElementById('emailInput').value = ''; document.getElementById('passwordInput').value = ''; }).catch((error) => { alert(t("loginFailed") + error.message); });
     }
-
     function registerWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
         if(!email || !password) return alert(t("enterEmailPass"));
-        
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                alert(t("accCreated"));
-                document.getElementById('emailInput').value = '';
-                document.getElementById('passwordInput').value = '';
-            })
-            .catch((error) => {
-                alert(t("accFailed") + error.message);
-            });
+        auth.createUserWithEmailAndPassword(email, password).then(() => { alert(t("accCreated")); document.getElementById('emailInput').value = ''; document.getElementById('passwordInput').value = ''; }).catch((error) => { alert(t("accFailed") + error.message); });
     }
-
-    function signOut() {
-        auth.signOut().then(() => {
-            alert(t("logoutSuccess"));
-        }).catch((error) => {
-            console.error("Logout Failed: ", error);
-        });
-    }
+    function signOut() { auth.signOut().then(() => { alert(t("logoutSuccess")); }).catch((error) => { console.error("Logout Failed: ", error); }); }
 
     auth.onAuthStateChanged((user) => {
         const loginArea = document.getElementById('loginArea');
         const profileArea = document.getElementById('profileArea');
-        
         if (user) {
             loginArea.style.display = 'none';
             profileArea.style.display = 'block';
-            
-            const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-            document.getElementById('profilePic').src = user.photoURL ? user.photoURL : defaultAvatar;
+            document.getElementById('profilePic').src = user.photoURL ? user.photoURL : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
             document.getElementById('profileName').innerText = user.displayName ? user.displayName : 'My Account';
             document.getElementById('profileEmail').innerText = user.email;
         } else {
@@ -717,19 +656,11 @@
     function switchNav(sectionId, clickedElement) {
         document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-
         document.getElementById(sectionId + '-section').classList.add('active');
         clickedElement.classList.add('active');
-
-        if (sectionId === 'history') {
-            loadHistoryFromFirebase();
-        }
-        if (sectionId === 'movies') {
-            loadMoviesFromFirebase();
-        }
-        if (sectionId === 'favorites') {
-            loadFavorites();
-        }
+        if (sectionId === 'history') loadHistoryFromFirebase();
+        if (sectionId === 'movies') loadMoviesFromFirebase();
+        if (sectionId === 'favorites') loadFavorites();
     }
 
     const video = document.getElementById('videoElement');
@@ -745,59 +676,77 @@
     const statusText = document.getElementById('statusText');
     const videoLoader = document.getElementById('videoLoader');
 
+    // ==========================================
+    // ১. আপনার নির্দেশ অনুযায়ী ডাটাবেস সার্চ আপডেট করা হলো
+    // ==========================================
     function saveAndPlay() {
-        let inputUrl = document.getElementById('videoUrl').value.trim(); 
-        let titleInput = document.getElementById('videoTitle').value.trim();
-
-        if(!inputUrl) return alert(t("enterUrl"));
+        let tgCode = document.getElementById('videoUrl').value.trim(); 
+        
+        if(!tgCode) return alert(t("enterUrl"));
 
         videoLoader.style.display = 'block';
         document.getElementById('placeholderText').style.display = 'none';
 
-        if (inputUrl.startsWith("TG-")) {
+        // ডাটাবেসে ঠিক আপনার দেওয়া TG কোড দিয়েই খুঁজবে
+        if (tgCode.toUpperCase().startsWith("TG-")) {
             statusText.innerText = "Checking Code...";
-            firebase.database().ref('secure_links/' + inputUrl).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    let finalTitle = titleInput ? titleInput : (data.title || "Unknown Video"); 
-                    let finalPoster = data.poster ? data.poster : ""; 
+            let searchCode = tgCode.toUpperCase(); // ছোট হাতের দিলেও বড় হাতের করে নেবে
 
-                    document.getElementById('videoTitle').value = finalTitle; 
-                    
+            firebase.database().ref('secure_links/' + searchCode).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    let data = snapshot.val();
+                    // আপনার অ্যাডমিন প্যানেলে দেওয়া 'নাম', 'পোস্টার' এবং 'লিংক' 
+                    let actualUrl = data.link || data.url || data.real_url;
+                    let movieName = data.title || data.name || "Unknown Movie";
+                    let posterImage = data.poster || data.image || "";
+
+                    if (!actualUrl) {
+                        alert("এই কোডের ভেতর কোনো মুভি লিংক পাওয়া যায়নি!");
+                        videoLoader.style.display = 'none';
+                        statusText.innerText = "Error Link";
+                        return;
+                    }
+
+                    document.getElementById('videoTitle').value = movieName; 
+
                     dbRef.push({ 
-                        title: finalTitle, 
-                        url: data.real_url, 
-                        poster: finalPoster, 
+                        title: movieName, 
+                        url: actualUrl, 
+                        poster: posterImage, 
                         timestamp: new Date().toLocaleString() 
                     });
                     
-                    startPlayer(data.real_url, finalPoster);
+                    startPlayer(actualUrl, posterImage);
+
                 } else {
                     alert(t("invalidCode"));
                     statusText.innerText = "Ready to Play";
-                    videoLoader.style.display = 'none'; 
+                    videoLoader.style.display = 'none';
                 }
             }).catch(error => {
-                alert(t("serverError"));
-                videoLoader.style.display = 'none'; 
+                alert("Database Error!");
+                videoLoader.style.display = 'none';
             });
         } else {
-            if(!titleInput) titleInput = "Unknown Video";
+            // যদি কেউ সরাসরি লিংক দেয় 
+            let titleInput = document.getElementById('videoTitle').value.trim() || "Unknown Video";
             dbRef.push({ 
                 title: titleInput, 
-                url: inputUrl, 
+                url: tgCode, 
                 poster: "",
                 timestamp: new Date().toLocaleString() 
             });
-            startPlayer(inputUrl, "");
+            startPlayer(tgCode, "");
         }
     }
 
+    // ==========================================
+    // ২. ভিডিও লোডিং এ আটকে থাকার সমস্যার সমাধান
+    // ==========================================
     function startPlayer(url, posterUrl = "") {
         document.getElementById('placeholderText').style.display = 'none';
         video.style.display = 'block';
-        
-        video.style.objectFit = 'cover'; // পোস্টার পুরো ফ্রেম কভার করবে
+        video.style.objectFit = 'cover'; 
 
         if(posterUrl) {
             video.poster = posterUrl;
@@ -805,17 +754,43 @@
             video.removeAttribute('poster');
         }
 
-        video.src = url;
-        video.play();
+        // ব্রাউজার যেন আগের ভিডিওর ক্যাশে আটকে না থাকে তাই এটি যোগ করা হলো
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+
+        if (Hls.isSupported() && url.includes(".m3u8")) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play().catch(e => console.log(e));
+            });
+        } else {
+            video.src = url;
+            video.load(); // নতুন লিংক ফোর্স লোড করার জন্য 
+            
+            let playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Play interrupted:", error);
+                    statusText.innerText = "Click Play Icon";
+                    videoLoader.style.display = 'none';
+                    playPauseIcon.className = 'fa-solid fa-play';
+                });
+            }
+        }
+
         playPauseIcon.className = 'fa-solid fa-pause';
         showControls();
         statusText.innerText = "Loading Video...";
+        videoLoader.style.display = 'block';
     }
 
     video.addEventListener('playing', () => {
         videoLoader.style.display = 'none';
         statusText.innerText = "Playing";
-        video.style.objectFit = 'contain'; // ভিডিও প্লে শুরু হলে অরিজিনাল সাইজে আসবে যাতে ভিডিও না কাটে
+        video.style.objectFit = 'contain'; 
     });
 
     video.addEventListener('waiting', () => {
@@ -823,22 +798,23 @@
         statusText.innerText = "Buffering...";
     });
 
+    // ৩. যদি ভিডিও লিংক কাজ না করে তবে অনন্তকাল না ঘুরে বলে দেবে
+    video.addEventListener('error', () => {
+        statusText.innerText = "Video Format / Network Error!";
+        videoLoader.style.display = 'none';
+        playPauseIcon.className = 'fa-solid fa-play';
+    });
+
     function deleteHistoryItem(event, key) {
         event.stopPropagation(); 
-        if(confirm(t("deleteHistory"))) {
-            dbRef.child(key).remove();
-        }
+        if(confirm(t("deleteHistory"))) dbRef.child(key).remove();
     }
 
     function loadHistoryFromFirebase() {
         const listDiv = document.getElementById('historyList');
         dbRef.on('value', (snapshot) => {
             listDiv.innerHTML = ""; 
-            if(!snapshot.exists()){
-                listDiv.innerHTML = "<p style='text-align:center; color:gray;'>No history found.</p>";
-                return;
-            }
-            
+            if(!snapshot.exists()){ listDiv.innerHTML = "<p style='text-align:center; color:gray;'>No history found.</p>"; return; }
             let historyArray = [];
             snapshot.forEach((childSnapshot) => {
                 let data = childSnapshot.val();
@@ -849,25 +825,16 @@
 
             historyArray.forEach((data) => {
                 let iconOrPoster = `<div class="item-play-icon"><i class="fa-solid fa-play"></i></div>`;
-                if(data.poster && data.poster !== "") {
-                    iconOrPoster = `<img src="${data.poster}" class="item-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x50?text=No+Poster'">`;
-                }
-
+                if(data.poster && data.poster !== "") iconOrPoster = `<img src="${data.poster}" class="item-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x50?text=No+Poster'">`;
                 let safePoster = data.poster ? data.poster.replace(/'/g, "\\'") : "";
                 let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : "";
 
                 listDiv.innerHTML += `
                     <div class="history-item" onclick="startPlayer('${safeUrl}', '${safePoster}')">
                         ${iconOrPoster}
-                        <div class="item-info">
-                            <h4>${data.title}</h4>
-                            <p><small>${data.timestamp}</small></p>
-                        </div>
-                        <div class="history-options" onclick="deleteHistoryItem(event, '${data.key}')">
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </div>
-                    </div>
-                `;
+                        <div class="item-info"><h4>${data.title}</h4><p><small>${data.timestamp}</small></p></div>
+                        <div class="history-options" onclick="deleteHistoryItem(event, '${data.key}')"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                    </div>`;
             });
         });
     }
@@ -877,18 +844,13 @@
         firebase.database().ref('public_movies').on('value', (snapshot) => {
             gridDiv.innerHTML = ""; 
             if(!snapshot.exists()){
-                gridDiv.innerHTML = `<div class="placeholder-box" style="grid-column: span 2;">
-                    <i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
-                    No movies available right now.
-                </div>`;
+                gridDiv.innerHTML = `<div class="placeholder-box" style="grid-column: span 2;"><i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>No movies available right now.</div>`;
                 gridDiv.style.display = "block";
                 return;
             }
             gridDiv.style.display = "grid";
-            
             const dataObj = snapshot.val();
             const keys = Object.keys(dataObj).reverse();
-            
             keys.forEach(key => {
                 const data = dataObj[key];
                 const safeTitle = data.title ? data.title.replace(/'/g, "\\'") : 'Unknown';
@@ -901,11 +863,8 @@
                             <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                         </div>
                         <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
-                        <div class="movie-card-info">
-                            <h4>${data.title}</h4>
-                        </div>
-                    </div>
-                `;
+                        <div class="movie-card-info"><h4>${data.title}</h4></div>
+                    </div>`;
             });
         });
     }
@@ -913,12 +872,9 @@
     function playMovie(title, code) {
         document.getElementById('videoTitle').value = title;
         document.getElementById('videoUrl').value = code;
-        
         const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
         switchNav('home', homeNavBtn);
-        
         saveAndPlay();
-        
         document.querySelector('.content-card').scrollTop = 0;
     }
 
@@ -942,12 +898,9 @@
     document.getElementById('rewindBtn').onclick = (e) => { e.stopPropagation(); video.currentTime -= 10; };
     document.getElementById('forwardBtn').onclick = (e) => { e.stopPropagation(); video.currentTime += 10; };
 
-    video.addEventListener('loadedmetadata', () => {
-        durationText.textContent = formatTime(video.duration);
-    });
+    video.addEventListener('loadedmetadata', () => { durationText.textContent = formatTime(video.duration); });
 
     let isDragging = false; 
-
     video.addEventListener('timeupdate', () => {
         if (!isDragging) { 
             currentTimeText.textContent = formatTime(video.currentTime);
@@ -968,7 +921,6 @@
     }
 
     let dragPercentage = 0;
-
     function getPercentage(e) {
         const rect = seekBarContainer.getBoundingClientRect();
         let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
@@ -982,29 +934,9 @@
         currentTimeText.textContent = formatTime(percentage * video.duration);
     }
 
-    function startDragging(e) {
-        e.stopPropagation(); 
-        isDragging = true; 
-        dragPercentage = getPercentage(e);
-        updateSeekBarUI(dragPercentage);
-    }
-
-    function duringDragging(e) {
-        if(isDragging) {
-            if(e.type.includes('touch')) e.preventDefault(); 
-            dragPercentage = getPercentage(e);
-            updateSeekBarUI(dragPercentage);
-        }
-    }
-
-    function stopDragging() {
-        if(isDragging) {
-            isDragging = false;
-            if(video.duration) {
-                video.currentTime = dragPercentage * video.duration; 
-            }
-        }
-    }
+    function startDragging(e) { e.stopPropagation(); isDragging = true; dragPercentage = getPercentage(e); updateSeekBarUI(dragPercentage); }
+    function duringDragging(e) { if(isDragging) { if(e.type.includes('touch')) e.preventDefault(); dragPercentage = getPercentage(e); updateSeekBarUI(dragPercentage); } }
+    function stopDragging() { if(isDragging) { isDragging = false; if(video.duration) { video.currentTime = dragPercentage * video.duration; } } }
 
     seekBarContainer.addEventListener('mousedown', startDragging);
     seekBarContainer.addEventListener('touchstart', startDragging, {passive: false});
@@ -1013,77 +945,31 @@
     document.addEventListener('mouseup', stopDragging);
     document.addEventListener('touchend', stopDragging);
 
-    document.getElementById('restartBtn').onclick = (e) => {
-        e.stopPropagation();
-        video.currentTime = 0;
-        video.play();
-        playPauseIcon.className = 'fa-solid fa-pause';
-    };
+    document.getElementById('restartBtn').onclick = (e) => { e.stopPropagation(); video.currentTime = 0; video.play(); playPauseIcon.className = 'fa-solid fa-pause'; };
 
     const settingsMenu = document.getElementById('settingsMenu');
-    
     const qualityOption = document.getElementById('qualityOption');
     const qualityDisplay = document.getElementById('qualityDisplay');
     let qualities = ['Auto', '1080p', '720p', '480p', '360p'];
     let qualityIndex = 0;
 
-    // ডিফল্ট ল্যাঙ্গুয়েজ অনুযায়ী কোয়ালিটির লেখা ঠিক করা হয়েছে
     qualityOption.innerText = `${t("qualityText")}: Auto`;
-
-    qualityOption.onclick = (e) => {
-        e.stopPropagation();
-        qualityIndex = (qualityIndex + 1) % qualities.length;
-        let selectedQuality = qualities[qualityIndex];
-        
-        qualityOption.innerText = `${t("qualityText")}: ${selectedQuality}`;
-        qualityDisplay.innerText = selectedQuality;
-        statusText.innerText = `${t("qualityText")}: ${selectedQuality}`;
-    };
+    qualityOption.onclick = (e) => { e.stopPropagation(); qualityIndex = (qualityIndex + 1) % qualities.length; let selectedQuality = qualities[qualityIndex]; qualityOption.innerText = `${t("qualityText")}: ${selectedQuality}`; qualityDisplay.innerText = selectedQuality; statusText.innerText = `${t("qualityText")}: ${selectedQuality}`; };
 
     const speedOption = document.getElementById('speedOption');
     const downloadOption = document.getElementById('downloadOption');
     let speeds = [1, 1.5, 2];
     let speedIndex = 0;
 
-    document.getElementById('settingsBtn').onclick = (e) => {
-        e.stopPropagation();
-        settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex';
-    };
+    document.getElementById('settingsBtn').onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex'; };
 
-    speedOption.onclick = (e) => {
-        e.stopPropagation();
-        speedIndex = (speedIndex + 1) % speeds.length;
-        video.playbackRate = speeds[speedIndex];
-        speedOption.innerText = `Speed: ${speeds[speedIndex]}x`;
-        statusText.innerText = `Speed: ${speeds[speedIndex]}x`;
-    };
-
-    downloadOption.onclick = (e) => {
-        e.stopPropagation();
-        settingsMenu.style.display = 'none';
-        if(video.src) {
-            alert(t("downloadAlert"));
-        }
-    };
+    speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `Speed: ${speeds[speedIndex]}x`; statusText.innerText = `Speed: ${speeds[speedIndex]}x`; };
+    downloadOption.onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = 'none'; if(video.src) { alert(t("downloadAlert")); } };
 
     document.addEventListener('click', () => { settingsMenu.style.display = 'none'; });
 
-    document.getElementById('pipBtn').onclick = async (e) => {
-        e.stopPropagation();
-        try {
-            if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } 
-            else { await video.requestPictureInPicture(); }
-        } catch (error) { console.log("PiP not supported"); }
-    };
-
-    document.getElementById('fullscreenBtn').onclick = (e) => {
-        e.stopPropagation();
-        if (!document.fullscreenElement) {
-            videoContainer.requestFullscreen().catch(err => console.log(err));
-        } else {
-            document.exitFullscreen();
-        }
-    };
+    document.getElementById('pipBtn').onclick = async (e) => { e.stopPropagation(); try { if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } else { await video.requestPictureInPicture(); } } catch (error) { console.log("PiP not supported"); } };
+    document.getElementById('fullscreenBtn').onclick = (e) => { e.stopPropagation(); if (!document.fullscreenElement) { videoContainer.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } };
 
     let controlsTimeout;
     function showControls() {
@@ -1104,13 +990,7 @@
     
     videoContainer.addEventListener('click', (e) => {
         if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top') || e.target.closest('.settings-menu')) return;
-        
-        if (playerControls.style.display === 'none' || playerControls.style.display === '') {
-            showControls();
-        } else {
-            playerControls.style.display = 'none';
-            settingsMenu.style.display = 'none';
-        }
+        if (playerControls.style.display === 'none' || playerControls.style.display === '') { showControls(); } else { playerControls.style.display = 'none'; settingsMenu.style.display = 'none'; }
     });
 </script>
 
