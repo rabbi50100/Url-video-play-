@@ -788,6 +788,17 @@
         loadMoviesFromFirebase();
     }
 
+    // অ্যাড অটোমেটিক কমপ্লিট হওয়ার ফাংশন
+    function verifyAdComplete() {
+        isAdWatched = true;
+        clearInterval(adTimerInterval);
+        let adBtn = document.getElementById('adBtn');
+        adBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${t('adSuccess').split('!')[0]}`;
+        adBtn.classList.add('success');
+        adBtn.style.background = ""; 
+        alert(t('adSuccess'));
+    }
+
     function watchAd() {
         let adBtn = document.getElementById('adBtn');
         
@@ -809,8 +820,13 @@
                     adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('adWaitSpinner')} (${remainingTime}s)`;
                 } else {
                     clearInterval(adTimerInterval);
-                    adBtn.innerHTML = `<i class="fa-solid fa-check-double"></i> ${t('adDone')}`;
-                    adBtn.style.background = "#f57c00"; 
+                    // টাইমার জিরো হওয়ার পর ইউজার যদি ওয়েবসাইটে থাকে, অটোমেটিক চেক হবে
+                    if (document.visibilityState === 'visible') {
+                        verifyAdComplete();
+                    } else {
+                        adBtn.innerHTML = `<i class="fa-solid fa-check-double"></i> ${t('adDone')}`;
+                        adBtn.style.background = "#f57c00"; 
+                    }
                 }
             }, 1000);
             
@@ -818,19 +834,22 @@
             let elapsed = Date.now() - adClickTime;
             
             if (elapsed < 10000) {
-                // ১০ সেকেন্ড পূর্ণ হয়নি
                 alert(t('adIncomplete'));
             } else {
-                // ১০ সেকেন্ড পূর্ণ হয়েছে
-                isAdWatched = true;
-                clearInterval(adTimerInterval);
-                adBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${t('adSuccess').split('!')[0]}`;
-                adBtn.classList.add('success');
-                adBtn.style.background = ""; 
-                alert(t('adSuccess'));
+                verifyAdComplete();
             }
         }
     }
+
+    // ইউজার যখন অ্যাড দেখে মেইন ট্যাবে ব্যাক করবে তখন সিস্টেম অটোমেটিক চেক করবে
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === 'visible' && isAdClicked && !isAdWatched) {
+            let elapsed = Date.now() - adClickTime;
+            if (elapsed >= 10000) {
+                verifyAdComplete();
+            }
+        }
+    });
 
     async function setLanguageFromLocation() {
         let savedLang = localStorage.getItem('app_lang');
@@ -1000,7 +1019,18 @@
         favDiv.innerHTML = html;
     }
 
-    function signInWithGoogle() { auth.signInWithPopup(provider).then((result) => { alert(t("loginSuccess")); }).catch((error) => { alert(t("loginFailed") + error.message); }); }
+    // Google Login - টেলিগ্রাম বা ইন-অ্যাপ ব্রাউজারে লগইনের জন্য Popup এর বদলে Redirect ব্যবহার করা হয়েছে 
+    function signInWithGoogle() { 
+        auth.signInWithRedirect(provider).catch((error) => { 
+            alert(t("loginFailed") + error.message); 
+        }); 
+    }
+
+    // Redirect হওয়ার পর লগইন সাকসেস ধরবে এই অপশন
+    auth.getRedirectResult().catch((error) => {
+        alert(t("loginFailed") + " " + error.message);
+    });
+
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
