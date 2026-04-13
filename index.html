@@ -652,7 +652,7 @@
             accFailed: "অ্যাকাউন্ট তৈরি ব্যর্থ হয়েছে: ",
             logoutSuccess: "আপনি সফলভাবে লগআউট করেছেন!",
             enterUrl: "দয়া করে সঠিক ভিডিও ইউআরএল অথবা টেলিগ্রাম কোড দিন!",
-            invalidCode: "ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।",
+            invalidCode: "ভুল কোড! আপনার দেওয়া লিংকটি সঠিক নয় অথবা এক্সপায়ার হয়ে গেছে।",
             serverError: "সার্ভার সমস্যা হচ্ছে, একটু পর আবার চেষ্টা করুন।",
             deleteHistory: "আপনি কি এই হিস্টোরি ডিলিট করতে চান?",
             downloadAlert: "ভিডিওটি ডাউনলোড করতে চাইলে, ভিডিওর ওপর লং প্রেস (Long Press) করে 'Download video' অপশনটি সিলেক্ট করুন।",
@@ -785,18 +785,15 @@
         let qDisplay = document.getElementById('qualityDisplay').innerText;
         document.getElementById('qualityOption').innerText = `${t('qualityText')}: ${qDisplay}`;
         
-        // Speed
         let speedText = document.getElementById('speedOption').innerText.split(': ')[1] || '1x';
         document.getElementById('speedOption').innerText = `${t('speed')}: ${speedText}`;
         document.getElementById('downloadOption').innerText = t('downloadText');
 
-        // Re-render Dynamic contents
         loadFavorites();
         loadHistoryFromFirebase();
         loadMoviesFromFirebase();
     }
 
-    // অ্যাড অটোমেটিক কমপ্লিট হওয়ার ফাংশন
     function verifyAdComplete() {
         isAdWatched = true;
         clearInterval(adTimerInterval);
@@ -1423,16 +1420,15 @@
 
     speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; statusText.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; };
     
-    // ডাউনলোড অটোমেটিক শুরু করার কোড (যেহেতু সিস্টেম দিয়ে অটোমেটিক লং-প্রেস করানো ব্রাউজারে নিষিদ্ধ)
+    // নতুন ডাউনলোড কোড (নতুন ট্যাবে যাবে না, সরাসরি ডাউনলোড শুরু করবে)
     downloadOption.onclick = (e) => { 
         e.stopPropagation(); 
         settingsMenu.style.display = 'none'; 
         if(video.src) { 
-            // সরাসরি ভিডিও লিংক ওপেন বা ডাউনলোড শুরু করবে
             const a = document.createElement('a');
             a.href = video.src;
-            a.download = document.getElementById('videoTitle').value || 'video.mp4';
-            a.target = '_blank';
+            let movieTitle = document.getElementById('videoTitle').value || 'movie';
+            a.download = movieTitle + '.mp4';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1444,7 +1440,27 @@
     document.addEventListener('click', () => { settingsMenu.style.display = 'none'; });
 
     document.getElementById('pipBtn').onclick = async (e) => { e.stopPropagation(); try { if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } else { await video.requestPictureInPicture(); } } catch (error) { console.log("PiP not supported"); } };
-    document.getElementById('fullscreenBtn').onclick = (e) => { e.stopPropagation(); if (!document.fullscreenElement) { videoContainer.requestFullscreen().catch(err => console.log(err)); } else { document.exitFullscreen(); } };
+    
+    // নতুন ফুলস্ক্রিন কোড (যেকোনো মোবাইল এবং অ্যাপে সাপোর্ট করবে)
+    document.getElementById('fullscreenBtn').onclick = (e) => { 
+        e.stopPropagation(); 
+        let container = document.getElementById('videoContainer');
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) { 
+            if (container.requestFullscreen) {
+                container.requestFullscreen().catch(err => console.log(err));
+            } else if (container.webkitRequestFullscreen) { 
+                container.webkitRequestFullscreen();
+            } else if (video.webkitEnterFullscreen) { 
+                video.webkitEnterFullscreen();
+            }
+        } else { 
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        } 
+    };
 
     let controlsTimeout;
     function showControls() {
