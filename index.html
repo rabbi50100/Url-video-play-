@@ -6,7 +6,6 @@
     <title>Url Video Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* আপনার আগের সমস্ত CSS ডিজাইন অপরিবর্তিত রাখা হয়েছে */
         :root {
             --primary-red: #d32f2f;
             --white: #ffffff;
@@ -543,7 +542,6 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
-    // सम्पूर्ण Language Dictionary
     const translations = {
         en: { 
             appTitle: "Url Video Player",
@@ -1035,7 +1033,6 @@
         alert(t("loginFailed") + " " + error.message);
     });
 
-    // আপডেট করা ২ নম্বর কাজ: ফায়ারবেজ দিয়ে সঠিক জিমেইল/পাসওয়ার্ড ভেরিফাই করা
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
@@ -1049,11 +1046,11 @@
         })
         .catch((error) => { 
             if (error.code === 'auth/user-not-found') {
-                alert(t("emailNotFound")); // জিমেইল রেজিস্টার না থাকলে
+                alert(t("emailNotFound")); 
             } else if (error.code === 'auth/wrong-password') {
-                alert(t("wrongPassword")); // পাসওয়ার্ড ভুল হলে
+                alert(t("wrongPassword")); 
             } else if (error.code === 'auth/invalid-email') {
-                alert(t("invalidEmailFormat")); // জিমেইল এর ফরম্যাট ভুল হলে
+                alert(t("invalidEmailFormat")); 
             } else {
                 alert(t("loginFailed") + error.message); 
             }
@@ -1426,14 +1423,15 @@
 
     speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; statusText.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; };
     
-    // আপডেট করা ১ নম্বর কাজ: ডাউনলোড বাটনে ক্লিক করলেই ভিডিও ডাউনলোড হবে বা নতুন উইন্ডোতে খুলে ডাউনলোডের সুযোগ দেবে
+    // ডাউনলোড অটোমেটিক শুরু করার কোড (যেহেতু সিস্টেম দিয়ে অটোমেটিক লং-প্রেস করানো ব্রাউজারে নিষিদ্ধ)
     downloadOption.onclick = (e) => { 
         e.stopPropagation(); 
         settingsMenu.style.display = 'none'; 
         if(video.src) { 
+            // সরাসরি ভিডিও লিংক ওপেন বা ডাউনলোড শুরু করবে
             const a = document.createElement('a');
             a.href = video.src;
-            a.download = document.getElementById('videoTitle').value || 'downloaded_video.mp4';
+            a.download = document.getElementById('videoTitle').value || 'video.mp4';
             a.target = '_blank';
             document.body.appendChild(a);
             a.click();
