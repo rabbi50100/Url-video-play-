@@ -6,6 +6,7 @@
     <title>Url Video Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* আপনার আগের সমস্ত CSS ডিজাইন অপরিবর্তিত রাখা হয়েছে */
         :root {
             --primary-red: #d32f2f;
             --white: #ffffff;
@@ -580,6 +581,9 @@
             passPlaceholder: "Password",
             loginSuccess: "Login successful!",
             loginFailed: "Login failed: ",
+            emailNotFound: "This Gmail is not registered. Please register first!",
+            wrongPassword: "Incorrect password! Please try again.",
+            invalidEmailFormat: "Invalid Gmail format!",
             enterEmailPass: "Please enter email and password!",
             accCreated: "Account created and login successful!",
             accFailed: "Account creation failed: ",
@@ -642,6 +646,9 @@
             passPlaceholder: "পাসওয়ার্ড",
             loginSuccess: "লগইন সফল হয়েছে!",
             loginFailed: "লগইন ব্যর্থ হয়েছে: ",
+            emailNotFound: "এই জিমেইলটি রেজিস্টার করা নেই! দয়া করে আগে রেজিস্টার করুন।",
+            wrongPassword: "পাসওয়ার্ড ভুল হয়েছে! আবার চেষ্টা করুন।",
+            invalidEmailFormat: "জিমেইলের ধরন সঠিক নয়!",
             enterEmailPass: "দয়া করে ইমেইল এবং পাসওয়ার্ড দিন!",
             accCreated: "অ্যাকাউন্ট তৈরি এবং লগইন সফল হয়েছে!",
             accFailed: "অ্যাকাউন্ট তৈরি ব্যর্থ হয়েছে: ",
@@ -704,6 +711,9 @@
             passPlaceholder: "पासवर्ड",
             loginSuccess: "लॉगिन सफल रहा!",
             loginFailed: "लॉगिन विफल: ",
+            emailNotFound: "यह जीमेल पंजीकृत नहीं है! कृपया पहले रजिस्टर करें।",
+            wrongPassword: "गलत पासवर्ड! कृपया पुनः प्रयास करें।",
+            invalidEmailFormat: "अमान्य जीमेल प्रारूप!",
             enterEmailPass: "कृपया ईमेल और पासवर्ड दर्ज करें!",
             accCreated: "खाता बन गया और लॉगिन सफल रहा!",
             accFailed: "खाता निर्माण विफल: ",
@@ -820,7 +830,6 @@
                     adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('adWaitSpinner')} (${remainingTime}s)`;
                 } else {
                     clearInterval(adTimerInterval);
-                    // টাইমার জিরো হওয়ার পর ইউজার যদি ওয়েবসাইটে থাকে, অটোমেটিক চেক হবে
                     if (document.visibilityState === 'visible') {
                         verifyAdComplete();
                     } else {
@@ -841,7 +850,6 @@
         }
     }
 
-    // ইউজার যখন অ্যাড দেখে মেইন ট্যাবে ব্যাক করবে তখন সিস্টেম অটোমেটিক চেক করবে
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState === 'visible' && isAdClicked && !isAdWatched) {
             let elapsed = Date.now() - adClickTime;
@@ -857,11 +865,10 @@
             currentLang = savedLang;
             document.getElementById('languageSelect').value = currentLang;
             applyTranslations();
-            // Even if lang is saved, let's track the user IP in background
             trackUserLocation();
             return;
         }
-        trackUserLocation(true); // true means change lang based on location
+        trackUserLocation(true); 
     }
 
     async function trackUserLocation(autoSetLang = false) {
@@ -882,7 +889,6 @@
                 applyTranslations();
             }
 
-            // Save User Location Tag in Firebase
             firebase.database().ref('users_info/' + userDeviceId).update({
                 ip: data.ip,
                 country: data.country_name,
@@ -1019,24 +1025,41 @@
         favDiv.innerHTML = html;
     }
 
-    // Google Login - টেলিগ্রাম বা ইন-অ্যাপ ব্রাউজারে লগইনের জন্য Popup এর বদলে Redirect ব্যবহার করা হয়েছে 
     function signInWithGoogle() { 
         auth.signInWithRedirect(provider).catch((error) => { 
             alert(t("loginFailed") + error.message); 
         }); 
     }
 
-    // Redirect হওয়ার পর লগইন সাকসেস ধরবে এই অপশন
     auth.getRedirectResult().catch((error) => {
         alert(t("loginFailed") + " " + error.message);
     });
 
+    // আপডেট করা ২ নম্বর কাজ: ফায়ারবেজ দিয়ে সঠিক জিমেইল/পাসওয়ার্ড ভেরিফাই করা
     function loginWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
         if(!email || !password) return alert(t("enterEmailPass"));
-        auth.signInWithEmailAndPassword(email, password).then(() => { alert(t("loginSuccess")); document.getElementById('emailInput').value = ''; document.getElementById('passwordInput').value = ''; }).catch((error) => { alert(t("loginFailed") + error.message); });
+        
+        auth.signInWithEmailAndPassword(email, password)
+        .then(() => { 
+            alert(t("loginSuccess")); 
+            document.getElementById('emailInput').value = ''; 
+            document.getElementById('passwordInput').value = ''; 
+        })
+        .catch((error) => { 
+            if (error.code === 'auth/user-not-found') {
+                alert(t("emailNotFound")); // জিমেইল রেজিস্টার না থাকলে
+            } else if (error.code === 'auth/wrong-password') {
+                alert(t("wrongPassword")); // পাসওয়ার্ড ভুল হলে
+            } else if (error.code === 'auth/invalid-email') {
+                alert(t("invalidEmailFormat")); // জিমেইল এর ফরম্যাট ভুল হলে
+            } else {
+                alert(t("loginFailed") + error.message); 
+            }
+        });
     }
+
     function registerWithEmail() {
         const email = document.getElementById('emailInput').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
@@ -1155,7 +1178,6 @@
             startPlayer(tgCode, "");
         }
         
-        // প্লে হওয়ার পর স্ট্যাটাস রিসেট করা
         isAdWatched = false;
         isAdClicked = false;
         clearInterval(adTimerInterval);
@@ -1403,7 +1425,23 @@
     document.getElementById('settingsBtn').onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex'; };
 
     speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; statusText.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; };
-    downloadOption.onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = 'none'; if(video.src) { alert(t("downloadAlert")); } };
+    
+    // আপডেট করা ১ নম্বর কাজ: ডাউনলোড বাটনে ক্লিক করলেই ভিডিও ডাউনলোড হবে বা নতুন উইন্ডোতে খুলে ডাউনলোডের সুযোগ দেবে
+    downloadOption.onclick = (e) => { 
+        e.stopPropagation(); 
+        settingsMenu.style.display = 'none'; 
+        if(video.src) { 
+            const a = document.createElement('a');
+            a.href = video.src;
+            a.download = document.getElementById('videoTitle').value || 'downloaded_video.mp4';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            alert("No video playing to download!");
+        }
+    };
 
     document.addEventListener('click', () => { settingsMenu.style.display = 'none'; });
 
