@@ -483,7 +483,7 @@ function signInWithGoogle() {
 }
 
 auth.getRedirectResult().catch((error) => {
-    alert(t("loginFailed") + " " + error.message);
+    if (error) alert(t("loginFailed") + " " + error.message);
 });
 
 function loginWithEmail() {
@@ -533,11 +533,25 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
+// মডিফাইড ফুলস্ক্রিন নেভিগেশন (Movies & Me এর জন্য)
 function switchNav(sectionId, clickedElement) {
     document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     document.getElementById(sectionId + '-section').classList.add('active');
     clickedElement.classList.add('active');
+
+    let vContainer = document.getElementById('videoContainer');
+    let sBar = document.querySelector('.status-bar');
+    
+    // Movies এবং Me অপশনে গেলে ভিডিও কন্টেইনার লুকিয়ে ফুলস্ক্রিন দেখাবে
+    if (sectionId === 'movies' || sectionId === 'me') {
+        vContainer.style.display = 'none';
+        sBar.style.display = 'none';
+    } else {
+        vContainer.style.display = 'flex';
+        sBar.style.display = 'flex';
+    }
+
     if (sectionId === 'history') loadHistoryFromFirebase();
     if (sectionId === 'movies') loadMoviesFromFirebase();
     if (sectionId === 'favorites') loadFavorites();
@@ -557,6 +571,7 @@ const statusText = document.getElementById('statusText');
 const videoLoader = document.getElementById('videoLoader');
 
 let videoErrorTimeout; 
+let hlsInstance = null; // নতুন HLS ইনস্ট্যান্স স্টোর করার জন্য
 
 function saveAndPlay() {
     if (!isAdWatched) {
@@ -565,10 +580,15 @@ function saveAndPlay() {
     }
 
     let tgCode = document.getElementById('videoUrl').value.trim(); 
-    
     if(!tgCode) return alert(t("enterUrl"));
 
+    // ব্রাউজারের অটো-প্লে ব্লক বাইপাস এবং ফাস্ট স্টার্ট করার জন্য ট্রিক
     video.muted = false; 
+    let unlockPromise = video.play();
+    if(unlockPromise !== undefined) {
+        unlockPromise.then(() => video.pause()).catch(e => {});
+    }
+
     videoLoader.style.display = 'block';
     document.getElementById('placeholderText').style.display = 'none';
 
@@ -654,18 +674,33 @@ function startPlayer(url, posterUrl = "") {
     video.removeAttribute('src');
     video.load();
 
+    // আগের কোনো HLS ক্যাশ থাকলে ডিলিট করবে যাতে ফাস্ট লোড হয়
+    if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+    }
+
     if (Hls.isSupported() && url.includes(".m3u8")) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            video.play().catch(e => console.log(e));
+        hlsInstance = new Hls({ lowLatencyMode: true, enableWorker: true }); // Fast loading config
+        hlsInstance.loadSource(url);
+        hlsInstance.attachMedia(video);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+            let playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    statusText.innerText = t('clickPlay');
+                    videoLoader.style.display = 'none';
+                    playPauseIcon.className = 'fa-solid fa-play';
+                    clearTimeout(videoErrorTimeout); // Timeout Overlapping বন্ধ করা হলো
+                });
+            }
         });
-        hls.on(Hls.Events.ERROR, function (event, data) {
+        hlsInstance.on(Hls.Events.ERROR, function (event, data) {
             if (data.fatal) {
-                statusText.innerText = t('brokenLink');
+                statusText.innerText = t('timeoutBroken');
                 videoLoader.style.display = 'none';
                 playPauseIcon.className = 'fa-solid fa-play';
+                clearTimeout(videoErrorTimeout);
             }
         });
     } else {
@@ -675,10 +710,10 @@ function startPlayer(url, posterUrl = "") {
         let playPromise = video.play();
         if (playPromise !== undefined) {
             playPromise.catch(error => {
-                console.log("Play interrupted:", error);
                 statusText.innerText = t('clickPlay');
                 videoLoader.style.display = 'none';
                 playPauseIcon.className = 'fa-solid fa-play';
+                clearTimeout(videoErrorTimeout); // Timeout Overlapping বন্ধ করা হলো
             });
         }
     }
@@ -869,14 +904,13 @@ qualityOption.onclick = (e) => { e.stopPropagation(); qualityIndex = (qualityInd
 
 const speedOption = document.getElementById('speedOption');
 const downloadOption = document.getElementById('downloadOption');
-let speeds = [1, 1.5, 2];
+let speeds =[1, 1.5, 2];
 let speedIndex = 0;
 
 document.getElementById('settingsBtn').onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex'; };
 
 speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; statusText.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; };
 
-// নতুন ডাউনলোড কোড (নতুন ট্যাবে যাবে না, সরাসরি ডাউনলোড শুরু করবে)
 downloadOption.onclick = (e) => { 
     e.stopPropagation(); 
     settingsMenu.style.display = 'none'; 
@@ -897,7 +931,6 @@ document.addEventListener('click', () => { settingsMenu.style.display = 'none'; 
 
 document.getElementById('pipBtn').onclick = async (e) => { e.stopPropagation(); try { if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } else { await video.requestPictureInPicture(); } } catch (error) { console.log("PiP not supported"); } };
 
-// নতুন ফুলস্ক্রিন কোড (যেকোনো মোবাইল এবং অ্যাপে সাপোর্ট করবে)
 document.getElementById('fullscreenBtn').onclick = (e) => { 
     e.stopPropagation(); 
     let container = document.getElementById('videoContainer');
