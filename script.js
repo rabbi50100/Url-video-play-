@@ -175,7 +175,7 @@ const translations = {
         enterUrl: "कृपया मान्य वीडियो URL या TG कोड दर्ज करें!",
         invalidCode: "अमान्य कोड! आपके द्वारा दिया गया लिंक गलत है या समाप्त हो गया है।",
         serverError: "सर्वर त्रुटि, कृपया कुछ देर बाद प्रयास करें।",
-        deleteHistory: "क्या आप इस इतिहास को हटाना चाहते हैं?",
+        deleteHistory: "क्या;%(आप इस इतिहास को हटाना चाहते हैं?",
         downloadAlert: "वीडियो डाउनलोड करने के लिए, वीडियो पर लॉन्ग प्रेस करें और 'Download video' चुनें।",
         qualityText: "गुणवत्ता",
         invalidUrlError: "अमान्य URL! कृपया एक मान्य HTTP/HTTPS लिंक दर्ज करें।",
@@ -399,30 +399,47 @@ const dbRef = firebase.database().ref('user_history/' + userDeviceId);
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
+// শেয়ারিং লিংক থেকে ডাটা ধরার সিস্টেম
 window.addEventListener('load', () => {
     setLanguageFromLocation();
     video.muted = true;
 
-    firebase.database().ref('admin_settings/default_video').once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-            let data = snapshot.val();
-            let adminVideoUrl = data.url || "https://www.w3schools.com/html/mov_bbb.mp4";
-            let adminPoster = data.poster || "https://via.placeholder.com/480x250?text=Welcome+Video";
-            let adminTitle = data.title || "Welcome Video";
+    const urlParams = new URLSearchParams(window.location.search);
+    const vCode = urlParams.get('v');
+    const vTitle = urlParams.get('title');
 
-            document.getElementById('videoTitle').value = adminTitle;
-            startPlayer(adminVideoUrl, adminPoster);
-        } else {
-            const defaultUrl = "https://ia600800.us.archive.org/0/items/in-shot-20260408-010518378/InShot_20260408_010518378.mp4"; 
-            const defaultPoster = "https://via.placeholder.com/480x250?text=How+to+Watch+and+Download+Movies";
-            document.getElementById('videoTitle').value = "How to Watch & Download";
-            startPlayer(defaultUrl, defaultPoster);
+    if (vCode) {
+        // যদি কেউ শেয়ার লিংক থেকে আসে, তাহলে বক্সে ডাটা বসিয়ে দেবে
+        document.getElementById('videoUrl').value = vCode;
+        if (vTitle) {
+            document.getElementById('videoTitle').value = vTitle;
+            document.title = "Watch: " + vTitle;
         }
-    }).catch(() => {
-        const defaultUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; 
-        document.getElementById('videoTitle').value = "How to Watch & Download";
-        startPlayer(defaultUrl, "");
-    });
+        // প্লেসফোল্ডার আপডেট করে ইউজারকে জানাবে কী করতে হবে
+        document.getElementById('placeholderText').innerHTML = "MOVIE SELECTED!<br>PLEASE CLICK 'WATCH AD FIRST' TO PLAY";
+    } else {
+        // রেগুলার ভিজিটরদের জন্য ডিফল্ট ভিডিও
+        firebase.database().ref('admin_settings/default_video').once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                let data = snapshot.val();
+                let adminVideoUrl = data.url || "https://www.w3schools.com/html/mov_bbb.mp4";
+                let adminPoster = data.poster || "https://via.placeholder.com/480x250?text=Welcome+Video";
+                let adminTitle = data.title || "Welcome Video";
+
+                document.getElementById('videoTitle').value = adminTitle;
+                startPlayer(adminVideoUrl, adminPoster);
+            } else {
+                const defaultUrl = "https://ia600800.us.archive.org/0/items/in-shot-20260408-010518378/InShot_20260408_010518378.mp4"; 
+                const defaultPoster = "https://via.placeholder.com/480x250?text=How+to+Watch+and+Download+Movies";
+                document.getElementById('videoTitle').value = "How to Watch & Download";
+                startPlayer(defaultUrl, defaultPoster);
+            }
+        }).catch(() => {
+            const defaultUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; 
+            document.getElementById('videoTitle').value = "How to Watch & Download";
+            startPlayer(defaultUrl, "");
+        });
+    }
 });
 
 function getFavorites() { return JSON.parse(localStorage.getItem('my_favorites') || '[]'); }
@@ -464,6 +481,9 @@ function loadFavorites() {
             const safeCode = data.code.replace(/'/g, "\\'");
             html += `
                 <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
+                    <div class="share-btn" onclick="shareMovie(event, '${safeTitle}', '${safeCode}')">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
                     <div class="fav-btn active" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
                         <i class="fa-solid fa-heart"></i>
                     </div>
@@ -533,7 +553,6 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// মডিফাইড ফুলস্ক্রিন নেভিগেশন (Movies & Me এর জন্য)
 function switchNav(sectionId, clickedElement) {
     document.querySelectorAll('.nav-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -543,7 +562,6 @@ function switchNav(sectionId, clickedElement) {
     let vContainer = document.getElementById('videoContainer');
     let sBar = document.querySelector('.status-bar');
     
-    // Movies এবং Me অপশনে গেলে ভিডিও কন্টেইনার লুকিয়ে ফুলস্ক্রিন দেখাবে
     if (sectionId === 'movies' || sectionId === 'me') {
         vContainer.style.display = 'none';
         sBar.style.display = 'none';
@@ -571,7 +589,7 @@ const statusText = document.getElementById('statusText');
 const videoLoader = document.getElementById('videoLoader');
 
 let videoErrorTimeout; 
-let hlsInstance = null; // নতুন HLS ইনস্ট্যান্স স্টোর করার জন্য
+let hlsInstance = null; 
 
 function saveAndPlay() {
     if (!isAdWatched) {
@@ -582,7 +600,6 @@ function saveAndPlay() {
     let tgCode = document.getElementById('videoUrl').value.trim(); 
     if(!tgCode) return alert(t("enterUrl"));
 
-    // ব্রাউজারের অটো-প্লে ব্লক বাইপাস এবং ফাস্ট স্টার্ট করার জন্য ট্রিক
     video.muted = false; 
     let unlockPromise = video.play();
     if(unlockPromise !== undefined) {
@@ -674,14 +691,13 @@ function startPlayer(url, posterUrl = "") {
     video.removeAttribute('src');
     video.load();
 
-    // আগের কোনো HLS ক্যাশ থাকলে ডিলিট করবে যাতে ফাস্ট লোড হয়
     if (hlsInstance) {
         hlsInstance.destroy();
         hlsInstance = null;
     }
 
     if (Hls.isSupported() && url.includes(".m3u8")) {
-        hlsInstance = new Hls({ lowLatencyMode: true, enableWorker: true }); // Fast loading config
+        hlsInstance = new Hls({ lowLatencyMode: true, enableWorker: true });
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(video);
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -691,7 +707,7 @@ function startPlayer(url, posterUrl = "") {
                     statusText.innerText = t('clickPlay');
                     videoLoader.style.display = 'none';
                     playPauseIcon.className = 'fa-solid fa-play';
-                    clearTimeout(videoErrorTimeout); // Timeout Overlapping বন্ধ করা হলো
+                    clearTimeout(videoErrorTimeout);
                 });
             }
         });
@@ -713,7 +729,7 @@ function startPlayer(url, posterUrl = "") {
                 statusText.innerText = t('clickPlay');
                 videoLoader.style.display = 'none';
                 playPauseIcon.className = 'fa-solid fa-play';
-                clearTimeout(videoErrorTimeout); // Timeout Overlapping বন্ধ করা হলো
+                clearTimeout(videoErrorTimeout); 
             });
         }
     }
@@ -785,6 +801,25 @@ function loadHistoryFromFirebase() {
     });
 }
 
+// শেয়ার ফাংশন যুক্ত করা হলো
+function shareMovie(event, title, code) {
+    event.stopPropagation();
+    // লিংক তৈরি করা হচ্ছে যেখানে মুভির নাম এবং কোড থাকবে
+    const shareUrl = window.location.origin + window.location.pathname + '?v=' + encodeURIComponent(code) + '&title=' + encodeURIComponent(title);
+    
+    if (navigator.share) {
+        navigator.share({
+            title: "Watch " + title,
+            text: 'Watch ' + title + ' movie now!',
+            url: shareUrl
+        }).catch(err => console.log('Share error:', err));
+    } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert('Movie link copied successfully!');
+        });
+    }
+}
+
 function loadMoviesFromFirebase() {
     const gridDiv = document.getElementById('moviesGrid');
     firebase.database().ref('public_movies').on('value', (snapshot) => {
@@ -805,6 +840,9 @@ function loadMoviesFromFirebase() {
 
             gridDiv.innerHTML += `
                 <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
+                    <div class="share-btn" onclick="shareMovie(event, '${safeTitle}', '${safeCode}')">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
                     <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
                         <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                     </div>
@@ -816,6 +854,11 @@ function loadMoviesFromFirebase() {
 }
 
 function playMovie(title, code) {
+    // লিংকে মুভির নাম যুক্ত করার জন্য ব্রাউজারের URL আপডেট
+    const newUrl = window.location.origin + window.location.pathname + '?v=' + encodeURIComponent(code) + '&title=' + encodeURIComponent(title);
+    window.history.pushState({path: newUrl}, '', newUrl);
+    document.title = "Watch: " + title; // টাইটেল বার আপডেট
+
     document.getElementById('videoTitle').value = title;
     document.getElementById('videoUrl').value = code;
     const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
