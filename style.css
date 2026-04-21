@@ -362,6 +362,27 @@ input { border: none; outline: none; width: 100%; font-size: 16px; color: var(--
     color: var(--primary-red);
 }
 
+/* শেয়ার বাটন ডিজাইন */
+.share-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    z-index: 10;
+    transition: 0.3s;
+}
+.share-btn:hover {
+    background: var(--primary-red);
+}
+
 @media screen and (max-width: 480px) {
     .main-container { height: 100vh; height: 100dvh; max-height: 100vh; max-height: 100dvh; border-radius: 0; }
-  }
+}
