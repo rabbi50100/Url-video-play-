@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Open Graph Meta Tags for Default Share Preview -->
-    <meta property="og:title" content="Url Video Player - Watch Movies">
-    <meta property="og:description" content="Watch, download and share your favorite movies seamlessly.">
-    <meta property="og:image" content="https://via.placeholder.com/600x315?text=Url+Video+Player+Movies">
+    <meta property="og:title" content="Url Video Player - Watch Movies & Series">
+    <meta property="og:description" content="Watch, download and share your favorite movies and web series seamlessly.">
+    <meta property="og:image" content="https://via.placeholder.com/600x315?text=Url+Video+Player">
     <meta property="og:type" content="website">
 
     <title>Url Video Player</title>
@@ -67,6 +66,7 @@
                     <i class="fa-solid fa-backward-step" id="restartBtn" title="Restart"></i>
                     <i class="fa-solid fa-gear" id="settingsBtn" title="Settings"></i>
                     <i class="fa-regular fa-clone" id="pipBtn" title="Picture in Picture"></i>
+                    <i class="fa-solid fa-forward-step" id="nextEpisodeBtn" title="Next Episode" style="display: none; color: #ffeb3b;"></i>
                     <i class="fa-solid fa-expand" id="fullscreenBtn" title="Fullscreen"></i>
                 </div>
             </div>
@@ -75,6 +75,7 @@
 
     <div class="content-card">
         
+        <!-- Home Section -->
         <div id="home-section" class="nav-section active">
             <button id="adBtn" class="btn-ad" onclick="watchAd()">
                 <i class="fa-solid fa-rectangle-ad"></i> Watch Ad First
@@ -95,6 +96,7 @@
             </button>
         </div>
 
+        <!-- Movies Section -->
         <div id="movies-section" class="nav-section">
             <h3 id="titleMovies" style="margin-top:0;">All Movies</h3>
             <div id="moviesGrid" class="movies-grid">
@@ -105,52 +107,94 @@
             </div>
         </div>
 
+        <!-- Series Section -->
+        <div id="series-section" class="nav-section">
+            <h3 id="titleSeries" style="margin-top:0;">Web Series</h3>
+            <div id="seriesGrid" class="movies-grid">
+                <div class="placeholder-box" style="grid-column: span 2;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>
+                    <span id="txtLoadingSeries">Loading Series...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
         <div id="history-section" class="nav-section">
             <h3 id="titleHistory" style="margin-top:0;">Your History</h3>
             <div class="history-list" id="historyList"></div>
         </div>
 
-        <div id="favorites-section" class="nav-section">
-        </div>
-
+        <!-- Premium Me / Login Section -->
         <div id="me-section" class="nav-section">
-            <div id="loginArea" style="text-align:center; padding-top:10px;">
-                <h3 id="titleWelcome" style="margin-bottom: 5px;">Welcome!</h3>
-                <p id="descSync" style="color:var(--text-gray); font-size:14px; margin-bottom:20px;">Please login to sync your data</p>
+            
+            <!-- Login Area -->
+            <div id="loginArea" class="auth-container">
+                <div class="auth-header">
+                    <div class="auth-icon-wrapper">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 id="titleWelcome">Welcome Back!</h3>
+                    <p id="descSync">Login to sync your watch history securely.</p>
+                </div>
                 
-                <div class="input-group">
+                <div class="input-group premium-input">
                     <i class="fa-solid fa-envelope"></i>
                     <input type="email" id="emailInput" placeholder="Email Address">
                 </div>
-                <div class="input-group">
+                <div class="input-group premium-input">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="passwordInput" placeholder="Password">
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button id="btnLogin" class="btn-play" style="margin-top: 0; background: #333;" onclick="loginWithEmail()">Login</button>
-                    <button id="btnReg" class="btn-play" style="margin-top: 0;" onclick="registerWithEmail()">Register</button>
+                <div class="auth-action-btns">
+                    <button id="btnLogin" class="btn-primary" onclick="loginWithEmail()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </button>
+                    <button id="btnReg" class="btn-secondary" onclick="registerWithEmail()">
+                        <i class="fa-solid fa-user-plus"></i> Register
+                    </button>
                 </div>
 
-                <div id="textOr" style="margin: 15px 0; color: #aaa; font-size: 14px; font-weight: bold;">OR</div>
+                <div class="auth-divider">
+                    <span id="textOr">OR</span>
+                </div>
 
-                <button id="btnGoogle" class="btn-play btn-google" style="margin-top: 0;" onclick="signInWithGoogle()">
-                    <i class="fa-brands fa-google"></i> Login with Google
+                <button id="btnGoogle" class="btn-google-premium" onclick="signInWithGoogle()">
+                    <i class="fa-brands fa-google"></i> Continue with Google
                 </button>
             </div>
             
+            <!-- Profile Area -->
             <div id="profileArea" class="profile-container" style="display:none;">
-                <img id="profilePic" src="" alt="Profile Picture">
-                <h3 id="profileName">User Name</h3>
-                <p id="profileEmail">user@gmail.com</p>
-                <button id="btnLogout" class="btn-play btn-logout" onclick="signOut()">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                </button>
+                <div class="profile-card">
+                    <div class="profile-img-box">
+                        <img id="profilePic" src="" alt="Profile Picture">
+                    </div>
+                    <h3 id="profileName" class="profile-name">User Name</h3>
+                    <p id="profileEmail" class="profile-email">user@gmail.com</p>
+                    
+                    <div class="profile-stats-box">
+                        <div class="stat-item">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>History Synced</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fa-solid fa-circle-check" style="color: #4CAF50;"></i>
+                            <span>Verified User</span>
+                        </div>
+                    </div>
+
+                    <button id="btnLogout" class="btn-logout-premium" onclick="signOut()">
+                        <i class="fa-solid fa-power-off"></i> Logout
+                    </button>
+                </div>
             </div>
+            
         </div>
         
     </div>
 
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchNav('home', this)">
             <i class="fa-solid fa-house"></i>
@@ -160,17 +204,31 @@
             <i class="fa-solid fa-film"></i>
             <span id="navMoviesText">Movies</span>
         </div>
+        <div class="nav-item" onclick="switchNav('series', this)">
+            <i class="fa-solid fa-tv"></i>
+            <span id="navSeriesText">Series</span>
+        </div>
         <div class="nav-item" onclick="switchNav('history', this)">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <span id="navHistText">History</span>
         </div>
-        <div class="nav-item" onclick="switchNav('favorites', this)">
-            <i class="fa-solid fa-heart"></i>
-            <span id="navFavText">Favorites</span>
-        </div>
         <div class="nav-item" onclick="switchNav('me', this)">
             <i class="fa-solid fa-user"></i>
             <span id="navMeText">Me</span>
+        </div>
+    </div>
+
+    <!-- Series Modal (Pop-up Window) -->
+    <div class="series-modal-overlay" id="seriesModalOverlay" onclick="closeSeriesModal(event)">
+        <div class="series-modal" id="seriesModal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalSeriesTitle">Series Title</h3>
+                <i class="fa-solid fa-xmark" onclick="closeSeriesModal()"></i>
+            </div>
+            <div class="modal-body">
+                <select id="seasonSelect" class="season-select" onchange="changeSeason()"></select>
+                <div class="episode-list" id="episodeList"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -182,4 +240,4 @@
 <script src="script.js"></script>
 
 </body>
-                                                        </html>
+                        </html>
