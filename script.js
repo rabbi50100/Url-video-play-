@@ -9,21 +9,22 @@ const translations = {
         savePlay: "<i class='fa-solid fa-play'></i> SAVE AND PLAY",
         allMovies: "All Movies",
         loadingMovies: "Loading Movies...",
+        navSeries: "Series",
+        allSeries: "Web Series",
+        loadingSeries: "Loading Series...",
+        noSeries: "No web series available.",
         yourHistory: "Your History",
-        favorites: "Favorites",
-        welcome: "Welcome!",
-        syncText: "Please login to sync your data",
+        welcome: "Welcome Back!",
+        syncText: "Login to sync your watch history securely.",
         loginBtn: "Login",
         regBtn: "Register",
         or: "OR",
-        googleBtn: "<i class='fa-brands fa-google'></i> Login with Google",
-        logoutBtn: "<i class='fa-solid fa-right-from-bracket'></i> Logout",
+        googleBtn: "<i class='fa-brands fa-google'></i> Continue with Google",
+        logoutBtn: "<i class='fa-solid fa-power-off'></i> Logout",
         navHome: "Home",
         navMovies: "Movies",
         navHist: "History",
-        navFav: "Favorites",
         navMe: "Me",
-        noFav: "No favorite videos yet.",
         noHist: "No history found.",
         noMovies: "No movies available right now.",
         adIncomplete: "You haven't checked the ad yet.",
@@ -74,21 +75,22 @@ const translations = {
         savePlay: "<i class='fa-solid fa-play'></i> সেভ এন্ড প্লে",
         allMovies: "সকল মুভি",
         loadingMovies: "মুভি লোড হচ্ছে...",
+        navSeries: "সিরিজ",
+        allSeries: "ওয়েব সিরিজ",
+        loadingSeries: "সিরিজ লোড হচ্ছে...",
+        noSeries: "বর্তমানে কোনো সিরিজ উপলব্ধ নেই।",
         yourHistory: "আপনার হিস্টোরি",
-        favorites: "ফেভারিটস",
         welcome: "স্বাগতম!",
         syncText: "আপনার ডেটা সিঙ্ক করতে লগইন করুন",
         loginBtn: "লগইন",
         regBtn: "রেজিস্টার",
         or: "অথবা",
         googleBtn: "<i class='fa-brands fa-google'></i> গুগল দিয়ে লগইন করুন",
-        logoutBtn: "<i class='fa-solid fa-right-from-bracket'></i> লগআউট",
+        logoutBtn: "<i class='fa-solid fa-power-off'></i> লগআউট",
         navHome: "হোম",
         navMovies: "মুভি",
         navHist: "হিস্টোরি",
-        navFav: "ফেভারিটস",
         navMe: "মি",
-        noFav: "এখনো কোনো ফেভারিট ভিডিও নেই।",
         noHist: "কোনো হিস্টোরি পাওয়া যায়নি।",
         noMovies: "বর্তমানে কোনো মুভি উপলব্ধ নেই।",
         adIncomplete: "আপনি এখনো এর চেক করেন নাই।",
@@ -122,7 +124,7 @@ const translations = {
         dbError: "ডাটাবেজ এরর!",
         clickPlay: "প্লে আইকনে ক্লিক করুন",
         loadingVideo: "ভিডিও লোড হচ্ছে...",
-        timeoutBroken: "টাইমআউট: ভুল বা ভাঙা লিংক!",
+        timeoutBroken: "টাইমआउट: ভুল বা ভাঙা লিংক!",
         playing: "প্লে হচ্ছে",
         buffering: "বাফারিং...",
         errorVideoUrl: "এরর: ভুল ভিডিও লিংক!",
@@ -139,21 +141,22 @@ const translations = {
         savePlay: "<i class='fa-solid fa-play'></i> सेव और प्ले",
         allMovies: "सभी फिल्में",
         loadingMovies: "फिल्में लोड हो रही हैं...",
+        navSeries: "सीरीज़",
+        allSeries: "वेब सीरीज़",
+        loadingSeries: "सीरीज़ लोड हो रही हैं...",
+        noSeries: "अभी कोई सीरीज़ उपलब्ध नहीं हैं।",
         yourHistory: "आपका इतिहास",
-        favorites: "पसंदीदा",
-        welcome: "स्वागत हे!",
+        welcome: "वापसी पर स्वागत है!",
         syncText: "डेटा सिंक करने के लिए लॉगिन करें",
         loginBtn: "लॉग इन",
         regBtn: "रजिस्टर",
         or: "या",
-        googleBtn: "<i class='fa-brands fa-google'></i> Google से लॉगिन करें",
-        logoutBtn: "<i class='fa-solid fa-right-from-bracket'></i> लॉग आउट",
+        googleBtn: "<i class='fa-brands fa-google'></i> Google से जारी रखें",
+        logoutBtn: "<i class='fa-solid fa-power-off'></i> लॉग आउट",
         navHome: "होम",
         navMovies: "फिल्में",
         navHist: "इतिहास",
-        navFav: "पसंदीदा",
         navMe: "मी",
-        noFav: "अभी तक कोई पसंदीदा वीडियो नहीं।",
         noHist: "कोई इतिहास नहीं मिला।",
         noMovies: "अभी कोई फिल्में उपलब्ध नहीं हैं।",
         adIncomplete: "आपने अभी तक विज्ञापन की जांच नहीं की है।",
@@ -175,7 +178,7 @@ const translations = {
         enterUrl: "कृपया मान्य वीडियो URL या TG कोड दर्ज करें!",
         invalidCode: "अमान्य कोड! आपके द्वारा दिया गया लिंक गलत है या समाप्त हो गया है।",
         serverError: "सर्वर त्रुटि, कृपया कुछ देर बाद प्रयास करें।",
-        deleteHistory: "क्या;%(आप इस इतिहास को हटाना चाहते हैं?",
+        deleteHistory: "क्या आप इस इतिहास को हटाना चाहते हैं?",
         downloadAlert: "वीडियो डाउनलोड करने के लिए, वीडियो पर लॉन्ग प्रेस करें और 'Download video' चुनें।",
         qualityText: "गुणवत्ता",
         invalidUrlError: "अमान्य URL! कृपया एक मान्य HTTP/HTTPS लिंक दर्ज करें।",
@@ -216,26 +219,27 @@ function applyTranslations() {
 
     document.getElementById('titleMovies').innerText = t('allMovies');
     if(document.getElementById('txtLoading')) document.getElementById('txtLoading').innerText = t('loadingMovies');
-    document.getElementById('titleHistory').innerText = t('yourHistory');
     
-    let favSecTitle = document.querySelector('#favorites-section h3');
-    if(favSecTitle) favSecTitle.innerText = t('favorites');
+    document.getElementById('titleSeries').innerText = t('allSeries');
+    if(document.getElementById('txtLoadingSeries')) document.getElementById('txtLoadingSeries').innerText = t('loadingSeries');
+
+    document.getElementById('titleHistory').innerText = t('yourHistory');
     
     document.getElementById('titleWelcome').innerText = t('welcome');
     document.getElementById('descSync').innerText = t('syncText');
     document.getElementById('emailInput').placeholder = t('emailPlaceholder');
     document.getElementById('passwordInput').placeholder = t('passPlaceholder');
 
-    document.getElementById('btnLogin').innerText = t('loginBtn');
-    document.getElementById('btnReg').innerText = t('regBtn');
+    document.getElementById('btnLogin').innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> ` + t('loginBtn');
+    document.getElementById('btnReg').innerHTML = `<i class="fa-solid fa-user-plus"></i> ` + t('regBtn');
     document.getElementById('textOr').innerText = t('or');
     document.getElementById('btnGoogle').innerHTML = t('googleBtn');
     document.getElementById('btnLogout').innerHTML = t('logoutBtn');
 
     document.getElementById('navHomeText').innerText = t('navHome');
     document.getElementById('navMoviesText').innerText = t('navMovies');
+    document.getElementById('navSeriesText').innerText = t('navSeries');
     document.getElementById('navHistText').innerText = t('navHist');
-    document.getElementById('navFavText').innerText = t('navFav');
     document.getElementById('navMeText').innerText = t('navMe');
 
     let qDisplay = document.getElementById('qualityDisplay').innerText;
@@ -245,9 +249,9 @@ function applyTranslations() {
     document.getElementById('speedOption').innerText = `${t('speed')}: ${speedText}`;
     document.getElementById('downloadOption').innerText = t('downloadText');
 
-    loadFavorites();
     loadHistoryFromFirebase();
     loadMoviesFromFirebase();
+    loadSeriesFromFirebase();
 }
 
 function verifyAdComplete() {
@@ -262,9 +266,12 @@ function verifyAdComplete() {
 
 function watchAd() {
     let adBtn = document.getElementById('adBtn');
-    
     if (!isAdClicked) {
-        window.open('https://hdmoviewatch.netlify.app/', '_blank'); 
+        // Fetch Admin Ad Link dynamically
+        firebase.database().ref('admin_settings/ad_link').once('value').then(snap => {
+            let adUrl = snap.exists() ? snap.val() : 'https://hdmoviewatch.netlify.app/';
+            window.open(adUrl, '_blank');
+        });
         
         isAdClicked = true;
         adClickTime = Date.now();
@@ -276,7 +283,6 @@ function watchAd() {
         adTimerInterval = setInterval(() => {
             let elapsed = Math.floor((Date.now() - adClickTime) / 1000);
             remainingTime = 10 - elapsed;
-            
             if (remainingTime > 0) {
                 adBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('adWaitSpinner')} (${remainingTime}s)`;
             } else {
@@ -289,26 +295,45 @@ function watchAd() {
                 }
             }
         }, 1000);
-        
     } else {
         let elapsed = Date.now() - adClickTime;
-        
-        if (elapsed < 10000) {
-            alert(t('adIncomplete'));
-        } else {
-            verifyAdComplete();
-        }
+        if (elapsed < 10000) { alert(t('adIncomplete')); } else { verifyAdComplete(); }
     }
 }
 
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === 'visible' && isAdClicked && !isAdWatched) {
         let elapsed = Date.now() - adClickTime;
-        if (elapsed >= 10000) {
-            verifyAdComplete();
-        }
+        if (elapsed >= 10000) { verifyAdComplete(); }
     }
 });
+
+// ================= ADMIN ANALYTICS TRACKING ================= //
+function trackVisitAnalytics() {
+    if (sessionStorage.getItem('visit_tracked')) return;
+    sessionStorage.setItem('visit_tracked', 'true');
+
+    // 1. Daily Views Tracking
+    const dateStr = new Date().toISOString().split('T')[0];
+    firebase.database().ref(`analytics/daily_views/${dateStr}`).set(firebase.database.ServerValue.increment(1));
+
+    // 2. Traffic Sources Tracking
+    let domain = "Direct/App";
+    if (document.referrer) {
+        try { domain = new URL(document.referrer).hostname.replace(/\./g, '_'); } catch(e) {}
+    }
+    firebase.database().ref(`analytics/sources/${domain}`).set(firebase.database.ServerValue.increment(1));
+}
+
+function trackMovieClick(title) {
+    if(!title) return;
+    let safeTitleKey = title.replace(/[.#$[\]]/g, '_'); // Firebase key string safety
+    firebase.database().ref(`analytics/movie_clicks/${safeTitleKey}`).update({
+        title: title,
+        clicks: firebase.database.ServerValue.increment(1)
+    });
+}
+// ========================================================== //
 
 async function setLanguageFromLocation() {
     let savedLang = localStorage.getItem('app_lang');
@@ -328,24 +353,24 @@ async function trackUserLocation(autoSetLang = false) {
         let data = await response.json();
         
         if(autoSetLang){
-            if (data.country_code === 'BD') {
-                currentLang = 'bn';
-            } else if (data.country_code === 'IN') {
-                currentLang = 'hi';
-            } else {
-                currentLang = 'en';
-            }
+            if (data.country_code === 'BD') currentLang = 'bn';
+            else if (data.country_code === 'IN') currentLang = 'hi';
+            else currentLang = 'en';
+            
             localStorage.setItem('app_lang', currentLang);
             document.getElementById('languageSelect').value = currentLang;
             applyTranslations();
         }
 
+        // Send Location to Admin Country Analytics
+        if (data.country_name && !sessionStorage.getItem('country_tracked')) {
+            sessionStorage.setItem('country_tracked', 'true');
+            firebase.database().ref(`analytics/countries/${data.country_name}`).set(firebase.database.ServerValue.increment(1));
+        }
+
         firebase.database().ref('users_info/' + userDeviceId).update({
-            ip: data.ip,
-            country: data.country_name,
-            country_code: data.country_code,
-            language_selected: currentLang,
-            last_visited: new Date().toLocaleString()
+            ip: data.ip, country: data.country_name, country_code: data.country_code,
+            language_selected: currentLang, last_visited: new Date().toLocaleString()
         });
 
     } catch (e) {
@@ -370,9 +395,7 @@ function changeLanguage() {
     alert(t("langUpdated"));
 }
 
-function t(key) {
-    return translations[currentLang][key] || translations['en'][key];
-}
+function t(key) { return translations[currentLang][key] || translations['en'][key]; }
 
 const firebaseConfig = {
     apiKey: "AIzaSyDxENg9lQdYCpcQ_ujZvh_dazfE9Qdogb8",
@@ -381,9 +404,7 @@ const firebaseConfig = {
     projectId: "telegram-brought",
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 function getUniqueDeviceId() {
     let deviceId = localStorage.getItem('my_device_id');
@@ -399,8 +420,8 @@ const dbRef = firebase.database().ref('user_history/' + userDeviceId);
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// শেয়ারিং লিংক থেকে ডাটা ধরার সিস্টেম
 window.addEventListener('load', () => {
+    trackVisitAnalytics(); // Call Analytics on load
     setLanguageFromLocation();
     video.muted = true;
 
@@ -409,108 +430,35 @@ window.addEventListener('load', () => {
     const vTitle = urlParams.get('title');
 
     if (vCode) {
-        // যদি কেউ শেয়ার লিংক থেকে আসে, তাহলে বক্সে ডাটা বসিয়ে দেবে
         document.getElementById('videoUrl').value = vCode;
         if (vTitle) {
             document.getElementById('videoTitle').value = vTitle;
             document.title = "Watch: " + vTitle;
         }
-        // প্লেসফোল্ডার আপডেট করে ইউজারকে জানাবে কী করতে হবে
         document.getElementById('placeholderText').innerHTML = "MOVIE SELECTED!<br>PLEASE CLICK 'WATCH AD FIRST' TO PLAY";
     } else {
-        // রেগুলার ভিজিটরদের জন্য ডিফল্ট ভিডিও
         firebase.database().ref('admin_settings/default_video').once('value').then((snapshot) => {
             if (snapshot.exists()) {
                 let data = snapshot.val();
                 let adminVideoUrl = data.url || "https://www.w3schools.com/html/mov_bbb.mp4";
                 let adminPoster = data.poster || "https://via.placeholder.com/480x250?text=Welcome+Video";
                 let adminTitle = data.title || "Welcome Video";
-
                 document.getElementById('videoTitle').value = adminTitle;
                 startPlayer(adminVideoUrl, adminPoster);
             } else {
-                const defaultUrl = "https://ia600800.us.archive.org/0/items/in-shot-20260408-010518378/InShot_20260408_010518378.mp4"; 
-                const defaultPoster = "https://via.placeholder.com/480x250?text=How+to+Watch+and+Download+Movies";
-                document.getElementById('videoTitle').value = "How to Watch & Download";
-                startPlayer(defaultUrl, defaultPoster);
+                startPlayer("https://www.w3schools.com/html/mov_bbb.mp4", "");
             }
-        }).catch(() => {
-            const defaultUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; 
-            document.getElementById('videoTitle').value = "How to Watch & Download";
-            startPlayer(defaultUrl, "");
         });
     }
 });
 
-function getFavorites() { return JSON.parse(localStorage.getItem('my_favorites') || '[]'); }
-function saveFavorites(favs) { localStorage.setItem('my_favorites', JSON.stringify(favs)); }
-function isFavorite(code) { return getFavorites().some(f => f.code === code); }
-
-function toggleFavorite(event, title, code, poster) {
-    event.stopPropagation(); 
-    let favs = getFavorites();
-    const index = favs.findIndex(f => f.code === code);
-    const iconEl = event.currentTarget.querySelector('i');
-
-    if(index > -1) {
-        favs.splice(index, 1); 
-        iconEl.classList.remove('fa-solid');
-        iconEl.classList.add('fa-regular');
-        event.currentTarget.classList.remove('active');
-    } else {
-        favs.push({ title, code, poster }); 
-        iconEl.classList.remove('fa-regular');
-        iconEl.classList.add('fa-solid');
-        event.currentTarget.classList.add('active');
-    }
-    saveFavorites(favs);
-    loadFavorites(); 
-}
-
-function loadFavorites() {
-    const favDiv = document.querySelector('#favorites-section');
-    const favs = getFavorites();
-    let html = `<h3 style="margin-top:0;">${t('favorites')}</h3>`;
-
-    if(favs.length === 0) {
-        html += `<div class="placeholder-box"><i class="fa-solid fa-heart-crack" style="font-size: 30px; margin-bottom:10px; color:#aaa;"></i><br>${t('noFav')}</div>`;
-    } else {
-        html += `<div class="movies-grid">`;
-        favs.forEach(data => {
-            const safeTitle = data.title.replace(/'/g, "\\'");
-            const safeCode = data.code.replace(/'/g, "\\'");
-            html += `
-                <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
-                    <div class="share-btn" onclick="shareMovie(event, '${safeTitle}', '${safeCode}')">
-                        <i class="fa-solid fa-share-nodes"></i>
-                    </div>
-                    <div class="fav-btn active" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                    <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
-                    <div class="movie-card-info"><h4>${data.title}</h4></div>
-                </div>`;
-        });
-        html += `</div>`;
-    }
-    favDiv.innerHTML = html;
-}
-
-function signInWithGoogle() { 
-    auth.signInWithRedirect(provider).catch((error) => { 
-        alert(t("loginFailed") + error.message); 
-    }); 
-}
-
-auth.getRedirectResult().catch((error) => {
-    if (error) alert(t("loginFailed") + " " + error.message);
-});
+function signInWithGoogle() { auth.signInWithRedirect(provider).catch((error) => { alert(t("loginFailed") + error.message); }); }
+auth.getRedirectResult().catch((error) => { if (error) alert(t("loginFailed") + " " + error.message); });
 
 function loginWithEmail() {
     const email = document.getElementById('emailInput').value.trim();
     const password = document.getElementById('passwordInput').value.trim();
     if(!email || !password) return alert(t("enterEmailPass"));
-    
     auth.signInWithEmailAndPassword(email, password)
     .then(() => { 
         alert(t("loginSuccess")); 
@@ -518,15 +466,10 @@ function loginWithEmail() {
         document.getElementById('passwordInput').value = ''; 
     })
     .catch((error) => { 
-        if (error.code === 'auth/user-not-found') {
-            alert(t("emailNotFound")); 
-        } else if (error.code === 'auth/wrong-password') {
-            alert(t("wrongPassword")); 
-        } else if (error.code === 'auth/invalid-email') {
-            alert(t("invalidEmailFormat")); 
-        } else {
-            alert(t("loginFailed") + error.message); 
-        }
+        if (error.code === 'auth/user-not-found') alert(t("emailNotFound")); 
+        else if (error.code === 'auth/wrong-password') alert(t("wrongPassword")); 
+        else if (error.code === 'auth/invalid-email') alert(t("invalidEmailFormat")); 
+        else alert(t("loginFailed") + error.message); 
     });
 }
 
@@ -536,7 +479,7 @@ function registerWithEmail() {
     if(!email || !password) return alert(t("enterEmailPass"));
     auth.createUserWithEmailAndPassword(email, password).then(() => { alert(t("accCreated")); document.getElementById('emailInput').value = ''; document.getElementById('passwordInput').value = ''; }).catch((error) => { alert(t("accFailed") + error.message); });
 }
-function signOut() { auth.signOut().then(() => { alert(t("logoutSuccess")); }).catch((error) => { console.error("Logout Failed: ", error); }); }
+function signOut() { auth.signOut().then(() => { alert(t("logoutSuccess")); }); }
 
 auth.onAuthStateChanged((user) => {
     const loginArea = document.getElementById('loginArea');
@@ -562,17 +505,15 @@ function switchNav(sectionId, clickedElement) {
     let vContainer = document.getElementById('videoContainer');
     let sBar = document.querySelector('.status-bar');
     
-    if (sectionId === 'movies' || sectionId === 'me') {
-        vContainer.style.display = 'none';
-        sBar.style.display = 'none';
+    if (sectionId === 'movies' || sectionId === 'series' || sectionId === 'me') {
+        vContainer.style.display = 'none'; sBar.style.display = 'none';
     } else {
-        vContainer.style.display = 'flex';
-        sBar.style.display = 'flex';
+        vContainer.style.display = 'flex'; sBar.style.display = 'flex';
     }
 
     if (sectionId === 'history') loadHistoryFromFirebase();
     if (sectionId === 'movies') loadMoviesFromFirebase();
-    if (sectionId === 'favorites') loadFavorites();
+    if (sectionId === 'series') loadSeriesFromFirebase();
 }
 
 const video = document.getElementById('videoElement');
@@ -590,21 +531,19 @@ const videoLoader = document.getElementById('videoLoader');
 
 let videoErrorTimeout; 
 let hlsInstance = null; 
+let activeSeriesPlay = null; 
 
 function saveAndPlay() {
-    if (!isAdWatched) {
-        alert(t('adErrorStart'));
-        return; 
-    }
+    if (!isAdWatched) { alert(t('adErrorStart')); return; }
+
+    if (!activeSeriesPlay) document.getElementById('nextEpisodeBtn').style.display = 'none';
 
     let tgCode = document.getElementById('videoUrl').value.trim(); 
     if(!tgCode) return alert(t("enterUrl"));
 
     video.muted = false; 
     let unlockPromise = video.play();
-    if(unlockPromise !== undefined) {
-        unlockPromise.then(() => video.pause()).catch(e => {});
-    }
+    if(unlockPromise !== undefined) unlockPromise.then(() => video.pause()).catch(e => {});
 
     videoLoader.style.display = 'block';
     document.getElementById('placeholderText').style.display = 'none';
@@ -622,155 +561,78 @@ function saveAndPlay() {
 
                 if (!actualUrl) {
                     alert(t('noMovieLink'));
-                    videoLoader.style.display = 'none';
-                    statusText.innerText = t('errorLink');
-                    return;
+                    videoLoader.style.display = 'none'; statusText.innerText = t('errorLink'); return;
                 }
 
                 document.getElementById('videoTitle').value = movieName; 
-
-                dbRef.push({ 
-                    title: movieName, 
-                    url: actualUrl, 
-                    poster: posterImage, 
-                    timestamp: new Date().toLocaleString() 
-                });
-                
+                dbRef.push({ title: movieName, url: actualUrl, poster: posterImage, timestamp: new Date().toLocaleString() });
                 startPlayer(actualUrl, posterImage);
 
             } else {
                 alert(t("invalidCode"));
-                statusText.innerText = t('readyPlay');
-                videoLoader.style.display = 'none';
+                statusText.innerText = t('readyPlay'); videoLoader.style.display = 'none';
             }
-        }).catch(error => {
-            alert(t('dbError'));
-            videoLoader.style.display = 'none';
-        });
+        }).catch(error => { alert(t('dbError')); videoLoader.style.display = 'none'; });
     } else {
         if(!tgCode.startsWith("http")) {
-            alert(t("invalidUrlError"));
-            videoLoader.style.display = 'none';
-            statusText.innerText = "Invalid URL";
-            return;
+            alert(t("invalidUrlError")); videoLoader.style.display = 'none'; statusText.innerText = "Invalid URL"; return;
         }
 
         let titleInput = document.getElementById('videoTitle').value.trim() || "Unknown Video";
-        dbRef.push({ 
-            title: titleInput, 
-            url: tgCode, 
-            poster: "",
-            timestamp: new Date().toLocaleString() 
-        });
+        dbRef.push({ title: titleInput, url: tgCode, poster: "", timestamp: new Date().toLocaleString() });
         startPlayer(tgCode, "");
     }
     
-    isAdWatched = false;
-    isAdClicked = false;
-    clearInterval(adTimerInterval);
-    
+    isAdWatched = false; isAdClicked = false; clearInterval(adTimerInterval);
     let adBtn = document.getElementById('adBtn');
-    adBtn.innerHTML = t('adBtn');
-    adBtn.classList.remove('success');
-    adBtn.style.background = ""; 
+    adBtn.innerHTML = t('adBtn'); adBtn.classList.remove('success'); adBtn.style.background = ""; 
 }
 
 function startPlayer(url, posterUrl = "") {
     document.getElementById('placeholderText').style.display = 'none';
-    video.style.display = 'block';
-    video.style.objectFit = 'cover'; 
+    video.style.display = 'block'; video.style.objectFit = 'cover'; 
     clearTimeout(videoErrorTimeout); 
 
-    if(posterUrl) {
-        video.poster = posterUrl;
-    } else {
-        video.removeAttribute('poster');
-    }
+    if(posterUrl) video.poster = posterUrl;
+    else video.removeAttribute('poster');
 
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
+    video.pause(); video.removeAttribute('src'); video.load();
 
-    if (hlsInstance) {
-        hlsInstance.destroy();
-        hlsInstance = null;
-    }
+    if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
 
     if (Hls.isSupported() && url.includes(".m3u8")) {
         hlsInstance = new Hls({ lowLatencyMode: true, enableWorker: true });
-        hlsInstance.loadSource(url);
-        hlsInstance.attachMedia(video);
+        hlsInstance.loadSource(url); hlsInstance.attachMedia(video);
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
             let playPromise = video.play();
             if (playPromise !== undefined) {
-                playPromise.catch(e => {
-                    statusText.innerText = t('clickPlay');
-                    videoLoader.style.display = 'none';
-                    playPauseIcon.className = 'fa-solid fa-play';
-                    clearTimeout(videoErrorTimeout);
-                });
+                playPromise.catch(e => { statusText.innerText = t('clickPlay'); videoLoader.style.display = 'none'; playPauseIcon.className = 'fa-solid fa-play'; clearTimeout(videoErrorTimeout); });
             }
         });
         hlsInstance.on(Hls.Events.ERROR, function (event, data) {
-            if (data.fatal) {
-                statusText.innerText = t('timeoutBroken');
-                videoLoader.style.display = 'none';
-                playPauseIcon.className = 'fa-solid fa-play';
-                clearTimeout(videoErrorTimeout);
-            }
+            if (data.fatal) { statusText.innerText = t('timeoutBroken'); videoLoader.style.display = 'none'; playPauseIcon.className = 'fa-solid fa-play'; clearTimeout(videoErrorTimeout); }
         });
     } else {
-        video.src = url;
-        video.load(); 
-        
+        video.src = url; video.load(); 
         let playPromise = video.play();
         if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                statusText.innerText = t('clickPlay');
-                videoLoader.style.display = 'none';
-                playPauseIcon.className = 'fa-solid fa-play';
-                clearTimeout(videoErrorTimeout); 
-            });
+            playPromise.catch(error => { statusText.innerText = t('clickPlay'); videoLoader.style.display = 'none'; playPauseIcon.className = 'fa-solid fa-play'; clearTimeout(videoErrorTimeout); });
         }
     }
 
-    playPauseIcon.className = 'fa-solid fa-pause';
-    showControls();
-    statusText.innerText = t('loadingVideo');
-    videoLoader.style.display = 'block';
+    playPauseIcon.className = 'fa-solid fa-pause'; showControls();
+    statusText.innerText = t('loadingVideo'); videoLoader.style.display = 'block';
 
     videoErrorTimeout = setTimeout(() => {
-        if(video.readyState === 0) {
-            statusText.innerText = t('timeoutBroken');
-            videoLoader.style.display = 'none';
-            playPauseIcon.className = 'fa-solid fa-play';
-        }
+        if(video.readyState === 0) { statusText.innerText = t('timeoutBroken'); videoLoader.style.display = 'none'; playPauseIcon.className = 'fa-solid fa-play'; }
     }, 15000);
 }
 
-video.addEventListener('playing', () => {
-    clearTimeout(videoErrorTimeout); 
-    videoLoader.style.display = 'none';
-    statusText.innerText = t('playing');
-    video.style.objectFit = 'contain'; 
-});
+video.addEventListener('playing', () => { clearTimeout(videoErrorTimeout); videoLoader.style.display = 'none'; statusText.innerText = t('playing'); video.style.objectFit = 'contain'; });
+video.addEventListener('waiting', () => { videoLoader.style.display = 'block'; statusText.innerText = t('buffering'); });
+video.addEventListener('error', () => { clearTimeout(videoErrorTimeout); statusText.innerText = t('errorVideoUrl'); videoLoader.style.display = 'none'; playPauseIcon.className = 'fa-solid fa-play'; });
 
-video.addEventListener('waiting', () => {
-    videoLoader.style.display = 'block';
-    statusText.innerText = t('buffering');
-});
-
-video.addEventListener('error', () => {
-    clearTimeout(videoErrorTimeout);
-    statusText.innerText = t('errorVideoUrl');
-    videoLoader.style.display = 'none';
-    playPauseIcon.className = 'fa-solid fa-play';
-});
-
-function deleteHistoryItem(event, key) {
-    event.stopPropagation(); 
-    if(confirm(t("deleteHistory"))) dbRef.child(key).remove();
-}
+function deleteHistoryItem(event, key) { event.stopPropagation(); if(confirm(t("deleteHistory"))) dbRef.child(key).remove(); }
 
 function loadHistoryFromFirebase() {
     const listDiv = document.getElementById('historyList');
@@ -778,11 +640,7 @@ function loadHistoryFromFirebase() {
         listDiv.innerHTML = ""; 
         if(!snapshot.exists()){ listDiv.innerHTML = `<p style='text-align:center; color:gray;'>${t('noHist')}</p>`; return; }
         let historyArray =[];
-        snapshot.forEach((childSnapshot) => {
-            let data = childSnapshot.val();
-            data.key = childSnapshot.key; 
-            historyArray.push(data);
-        });
+        snapshot.forEach((childSnapshot) => { let data = childSnapshot.val(); data.key = childSnapshot.key; historyArray.push(data); });
         historyArray.reverse();
 
         historyArray.forEach((data) => {
@@ -801,22 +659,13 @@ function loadHistoryFromFirebase() {
     });
 }
 
-// শেয়ার ফাংশন যুক্ত করা হলো
 function shareMovie(event, title, code) {
     event.stopPropagation();
-    // লিংক তৈরি করা হচ্ছে যেখানে মুভির নাম এবং কোড থাকবে
     const shareUrl = window.location.origin + window.location.pathname + '?v=' + encodeURIComponent(code) + '&title=' + encodeURIComponent(title);
-    
     if (navigator.share) {
-        navigator.share({
-            title: "Watch " + title,
-            text: 'Watch ' + title + ' movie now!',
-            url: shareUrl
-        }).catch(err => console.log('Share error:', err));
+        navigator.share({ title: "Watch " + title, text: 'Watch ' + title + ' movie now!', url: shareUrl }).catch(err => console.log('Share error:', err));
     } else {
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Movie link copied successfully!');
-        });
+        navigator.clipboard.writeText(shareUrl).then(() => alert('Movie link copied successfully!'));
     }
 }
 
@@ -826,25 +675,19 @@ function loadMoviesFromFirebase() {
         gridDiv.innerHTML = ""; 
         if(!snapshot.exists()){
             gridDiv.innerHTML = `<div class="placeholder-box" style="grid-column: span 2;"><i class="fa-solid fa-film" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>${t('noMovies')}</div>`;
-            gridDiv.style.display = "block";
-            return;
+            gridDiv.style.display = "block"; return;
         }
         gridDiv.style.display = "grid";
         const dataObj = snapshot.val();
-        const keys = Object.keys(dataObj).reverse();
-        keys.forEach(key => {
+        Object.keys(dataObj).reverse().forEach(key => {
             const data = dataObj[key];
             const safeTitle = data.title ? data.title.replace(/'/g, "\\'") : 'Unknown';
             const safeCode = data.code ? data.code.replace(/'/g, "\\'") : '';
-            const isFav = isFavorite(data.code);
 
             gridDiv.innerHTML += `
                 <div class="movie-card" onclick="playMovie('${safeTitle}', '${safeCode}')">
                     <div class="share-btn" onclick="shareMovie(event, '${safeTitle}', '${safeCode}')">
                         <i class="fa-solid fa-share-nodes"></i>
-                    </div>
-                    <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${safeTitle}', '${safeCode}', '${data.poster}')">
-                        <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                     </div>
                     <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
                     <div class="movie-card-info"><h4>${data.title}</h4></div>
@@ -854,10 +697,15 @@ function loadMoviesFromFirebase() {
 }
 
 function playMovie(title, code) {
-    // লিংকে মুভির নাম যুক্ত করার জন্য ব্রাউজারের URL আপডেট
+    activeSeriesPlay = null; 
+    document.getElementById('nextEpisodeBtn').style.display = 'none';
+    
+    // Track Clicks for Admin Panel
+    trackMovieClick(title);
+
     const newUrl = window.location.origin + window.location.pathname + '?v=' + encodeURIComponent(code) + '&title=' + encodeURIComponent(title);
     window.history.pushState({path: newUrl}, '', newUrl);
-    document.title = "Watch: " + title; // টাইটেল বার আপডেট
+    document.title = "Watch: " + title; 
 
     document.getElementById('videoTitle').value = title;
     document.getElementById('videoUrl').value = code;
@@ -867,26 +715,124 @@ function playMovie(title, code) {
     document.querySelector('.content-card').scrollTop = 0;
 }
 
-loadMoviesFromFirebase();
-loadFavorites(); 
+// ---------------- Series Logic ---------------- //
+let allSeriesData = {};
+let currentOpenSeriesKey = null;
 
+function loadSeriesFromFirebase() {
+    const gridDiv = document.getElementById('seriesGrid');
+    firebase.database().ref('public_series').on('value', (snapshot) => {
+        gridDiv.innerHTML = "";
+        if(!snapshot.exists()){
+            gridDiv.innerHTML = `<div class="placeholder-box" style="grid-column: span 2;"><i class="fa-solid fa-tv" style="font-size: 30px; margin-bottom:10px; color:var(--primary-red);"></i><br>${t('noSeries') || 'No Series Available'}</div>`;
+            gridDiv.style.display = "block"; return;
+        }
+        gridDiv.style.display = "grid";
+        allSeriesData = snapshot.val();
+        Object.keys(allSeriesData).reverse().forEach(key => {
+            const data = allSeriesData[key];
+            gridDiv.innerHTML += `
+                <div class="movie-card" onclick="openSeriesModal('${key}')">
+                    <img src="${data.poster}" alt="Poster" onerror="this.src='https://via.placeholder.com/150x220?text=No+Poster'">
+                    <div class="movie-card-info"><h4>${data.title}</h4></div>
+                </div>`;
+        });
+    });
+}
+
+function openSeriesModal(key) {
+    currentOpenSeriesKey = key;
+    const series = allSeriesData[key];
+    document.getElementById('modalSeriesTitle').innerText = series.title;
+    const seasonSelect = document.getElementById('seasonSelect');
+    seasonSelect.innerHTML = '';
+    
+    if(series.seasons && Array.isArray(series.seasons)) {
+        series.seasons.forEach((season, index) => {
+            let opt = document.createElement('option');
+            opt.value = index; opt.innerText = season.name || `Season ${index + 1}`;
+            seasonSelect.appendChild(opt);
+        });
+        renderEpisodes(0);
+    } else {
+        document.getElementById('episodeList').innerHTML = `<p style="text-align:center; color: #777;">No episodes found.</p>`;
+    }
+    document.getElementById('seriesModalOverlay').style.display = 'flex';
+}
+
+function changeSeason() { renderEpisodes(parseInt(document.getElementById('seasonSelect').value)); }
+
+function renderEpisodes(seasonIndex) {
+    const series = allSeriesData[currentOpenSeriesKey];
+    const epList = document.getElementById('episodeList');
+    epList.innerHTML = '';
+    const episodes = series.seasons[seasonIndex].episodes;
+    
+    if(episodes && episodes.length > 0) {
+        episodes.forEach((ep, epIndex) => {
+            const safeEpTitle = ep.title.replace(/'/g, "\\'");
+            const safeCode = ep.code.replace(/'/g, "\\'");
+            epList.innerHTML += `
+                <div class="episode-item" onclick="playEpisode('${currentOpenSeriesKey}', ${seasonIndex}, ${epIndex}, '${safeCode}', '${safeEpTitle}')">
+                    <span>${ep.title}</span><i class="fa-solid fa-play"></i>
+                </div>`;
+        });
+    } else { epList.innerHTML = `<p style="text-align:center; color: #777;">No episodes found.</p>`; }
+}
+
+function closeSeriesModal(e) {
+    if(!e || e.target.id === 'seriesModalOverlay' || e.target.classList.contains('fa-xmark')) document.getElementById('seriesModalOverlay').style.display = 'none';
+}
+
+function playEpisode(seriesKey, sIdx, eIdx, code, epTitle) {
+    closeSeriesModal();
+    const series = allSeriesData[seriesKey];
+    const fullTitle = `${series.title} - ${series.seasons[sIdx].name} - ${epTitle}`;
+    
+    activeSeriesPlay = { key: seriesKey, seasonIndex: sIdx, epIndex: eIdx };
+    checkNextEpisode(); 
+    
+    // Track Clicks for Admin Panel
+    trackMovieClick(series.title);
+    
+    const homeNavBtn = document.querySelector('.bottom-nav .nav-item:nth-child(1)');
+    switchNav('home', homeNavBtn);
+    document.getElementById('videoTitle').value = fullTitle;
+    document.getElementById('videoUrl').value = code;
+    saveAndPlay(); document.querySelector('.content-card').scrollTop = 0;
+}
+
+function checkNextEpisode() {
+    const btn = document.getElementById('nextEpisodeBtn');
+    if(!activeSeriesPlay) { btn.style.display = 'none'; return; }
+    const series = allSeriesData[activeSeriesPlay.key];
+    const season = series.seasons[activeSeriesPlay.seasonIndex];
+    
+    if(activeSeriesPlay.epIndex + 1 < season.episodes.length) btn.style.display = 'block'; 
+    else if (activeSeriesPlay.seasonIndex + 1 < series.seasons.length && series.seasons[activeSeriesPlay.seasonIndex + 1].episodes && series.seasons[activeSeriesPlay.seasonIndex + 1].episodes.length > 0) btn.style.display = 'block'; 
+    else btn.style.display = 'none'; 
+}
+
+document.getElementById('nextEpisodeBtn').onclick = (e) => {
+    e.stopPropagation();
+    if(!activeSeriesPlay) return;
+    const series = allSeriesData[activeSeriesPlay.key];
+    let nextSIdx = activeSeriesPlay.seasonIndex; let nextEIdx = activeSeriesPlay.epIndex + 1;
+    if(nextEIdx >= series.seasons[nextSIdx].episodes.length) { nextSIdx++; nextEIdx = 0; }
+    const nextEp = series.seasons[nextSIdx].episodes[nextEIdx];
+    playEpisode(activeSeriesPlay.key, nextSIdx, nextEIdx, nextEp.code, nextEp.title);
+};
+
+// ---------------- Player Controls ---------------- //
 function togglePlay(e) {
     if(e) e.stopPropagation();
-    if (video.paused) {
-        video.play();
-        playPauseIcon.className = 'fa-solid fa-pause';
-        statusText.innerText = t('playing');
-    } else {
-        video.pause();
-        playPauseIcon.className = 'fa-solid fa-play';
-        statusText.innerText = t('paused');
-    }
+    if (video.paused) { video.play(); playPauseIcon.className = 'fa-solid fa-pause'; statusText.innerText = t('playing'); } 
+    else { video.pause(); playPauseIcon.className = 'fa-solid fa-play'; statusText.innerText = t('paused'); }
 }
 
 playPauseBtn.onclick = togglePlay;
 document.getElementById('rewindBtn').onclick = (e) => { e.stopPropagation(); video.currentTime -= 10; };
 document.getElementById('forwardBtn').onclick = (e) => { e.stopPropagation(); video.currentTime += 10; };
-
 video.addEventListener('loadedmetadata', () => { durationText.textContent = formatTime(video.duration); });
 
 let isDragging = false; 
@@ -894,18 +840,14 @@ video.addEventListener('timeupdate', () => {
     if (!isDragging) { 
         currentTimeText.textContent = formatTime(video.currentTime);
         const percentage = (video.currentTime / video.duration) * 100;
-        seekBarProgress.style.width = percentage + '%';
-        seekHandle.style.left = percentage + '%';
+        seekBarProgress.style.width = percentage + '%'; seekHandle.style.left = percentage + '%';
     }
 });
 
 function formatTime(seconds) {
     if(isNaN(seconds)) return "00:00";
-    let h = Math.floor(seconds / 3600);
-    let m = Math.floor((seconds % 3600) / 60);
-    let s = Math.floor(seconds % 60);
-    m = m < 10 ? '0' + m : m;
-    s = s < 10 ? '0' + s : s;
+    let h = Math.floor(seconds / 3600); let m = Math.floor((seconds % 3600) / 60); let s = Math.floor(seconds % 60);
+    m = m < 10 ? '0' + m : m; s = s < 10 ? '0' + s : s;
     return h > 0 ? h + ':' + m + ':' + s : m + ':' + s;
 }
 
@@ -913,19 +855,13 @@ let dragPercentage = 0;
 function getPercentage(e) {
     const rect = seekBarContainer.getBoundingClientRect();
     let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-    let posPercentage = (clientX - rect.left) / rect.width;
-    return Math.max(0, Math.min(1, posPercentage)); 
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)); 
 }
 
-function updateSeekBarUI(percentage) {
-    seekBarProgress.style.width = (percentage * 100) + '%';
-    seekHandle.style.left = (percentage * 100) + '%';
-    currentTimeText.textContent = formatTime(percentage * video.duration);
-}
-
+function updateSeekBarUI(percentage) { seekBarProgress.style.width = (percentage * 100) + '%'; seekHandle.style.left = (percentage * 100) + '%'; currentTimeText.textContent = formatTime(percentage * video.duration); }
 function startDragging(e) { e.stopPropagation(); isDragging = true; dragPercentage = getPercentage(e); updateSeekBarUI(dragPercentage); }
 function duringDragging(e) { if(isDragging) { if(e.type.includes('touch')) e.preventDefault(); dragPercentage = getPercentage(e); updateSeekBarUI(dragPercentage); } }
-function stopDragging() { if(isDragging) { isDragging = false; if(video.duration) { video.currentTime = dragPercentage * video.duration; } } }
+function stopDragging() { if(isDragging) { isDragging = false; if(video.duration) video.currentTime = dragPercentage * video.duration; } }
 
 seekBarContainer.addEventListener('mousedown', startDragging);
 seekBarContainer.addEventListener('touchstart', startDragging, {passive: false});
@@ -933,7 +869,6 @@ document.addEventListener('mousemove', duringDragging);
 document.addEventListener('touchmove', duringDragging, {passive: false});
 document.addEventListener('mouseup', stopDragging);
 document.addEventListener('touchend', stopDragging);
-
 document.getElementById('restartBtn').onclick = (e) => { e.stopPropagation(); video.currentTime = 0; video.play(); playPauseIcon.className = 'fa-solid fa-pause'; };
 
 const settingsMenu = document.getElementById('settingsMenu');
@@ -947,73 +882,46 @@ qualityOption.onclick = (e) => { e.stopPropagation(); qualityIndex = (qualityInd
 
 const speedOption = document.getElementById('speedOption');
 const downloadOption = document.getElementById('downloadOption');
-let speeds =[1, 1.5, 2];
-let speedIndex = 0;
-
+let speeds =[1, 1.5, 2]; let speedIndex = 0;
 document.getElementById('settingsBtn').onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = settingsMenu.style.display === 'flex' ? 'none' : 'flex'; };
 
 speedOption.onclick = (e) => { e.stopPropagation(); speedIndex = (speedIndex + 1) % speeds.length; video.playbackRate = speeds[speedIndex]; speedOption.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; statusText.innerText = `${t('speed')}: ${speeds[speedIndex]}x`; };
 
 downloadOption.onclick = (e) => { 
-    e.stopPropagation(); 
-    settingsMenu.style.display = 'none'; 
+    e.stopPropagation(); settingsMenu.style.display = 'none'; 
     if(video.src) { 
-        const a = document.createElement('a');
-        a.href = video.src;
-        let movieTitle = document.getElementById('videoTitle').value || 'movie';
-        a.download = movieTitle + '.mp4';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    } else {
-        alert("No video playing to download!");
-    }
+        const a = document.createElement('a'); a.href = video.src;
+        a.download = (document.getElementById('videoTitle').value || 'movie') + '.mp4';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } else alert("No video playing to download!");
 };
-
 document.addEventListener('click', () => { settingsMenu.style.display = 'none'; });
 
-document.getElementById('pipBtn').onclick = async (e) => { e.stopPropagation(); try { if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } else { await video.requestPictureInPicture(); } } catch (error) { console.log("PiP not supported"); } };
+document.getElementById('pipBtn').onclick = async (e) => { e.stopPropagation(); try { if (document.pictureInPictureElement) await document.exitPictureInPicture(); else await video.requestPictureInPicture(); } catch (error) { console.log("PiP not supported"); } };
 
 document.getElementById('fullscreenBtn').onclick = (e) => { 
-    e.stopPropagation(); 
-    let container = document.getElementById('videoContainer');
+    e.stopPropagation(); let container = document.getElementById('videoContainer');
     if (!document.fullscreenElement && !document.webkitFullscreenElement) { 
-        if (container.requestFullscreen) {
-            container.requestFullscreen().catch(err => console.log(err));
-        } else if (container.webkitRequestFullscreen) { 
-            container.webkitRequestFullscreen();
-        } else if (video.webkitEnterFullscreen) { 
-            video.webkitEnterFullscreen();
-        }
+        if (container.requestFullscreen) container.requestFullscreen().catch(err => console.log(err));
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
     } else { 
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     } 
 };
 
 let controlsTimeout;
 function showControls() {
-    playerControls.style.display = 'flex';
-    clearTimeout(controlsTimeout);
-    if (!video.paused) {
-        controlsTimeout = setTimeout(() => {
-            if(!isDragging) {
-                playerControls.style.display = 'none';
-                settingsMenu.style.display = 'none';
-            }
-        }, 3000);
-    }
+    playerControls.style.display = 'flex'; clearTimeout(controlsTimeout);
+    if (!video.paused) { controlsTimeout = setTimeout(() => { if(!isDragging) { playerControls.style.display = 'none'; settingsMenu.style.display = 'none'; } }, 3000); }
 }
 
 videoContainer.addEventListener('mousemove', showControls);
 videoContainer.addEventListener('touchstart', showControls, {passive: true});
-
 videoContainer.addEventListener('click', (e) => {
     if (video.muted) video.muted = false;
-
     if(e.target.closest('.controls-center') || e.target.closest('.controls-bottom-bar') || e.target.closest('.controls-top') || e.target.closest('.settings-menu')) return;
-    if (playerControls.style.display === 'none' || playerControls.style.display === '') { showControls(); } else { playerControls.style.display = 'none'; settingsMenu.style.display = 'none'; }
+    if (playerControls.style.display === 'none' || playerControls.style.display === '') showControls(); 
+    else { playerControls.style.display = 'none'; settingsMenu.style.display = 'none'; }
 });
